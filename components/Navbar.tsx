@@ -28,7 +28,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden sm:flex items-center gap-1">
+        <div className="hidden sm:flex items-center gap-1">
           {NAV_LINKS.map(({ label, href }) => (
             <Link
               key={href}
@@ -48,7 +48,7 @@ export default function Navbar() {
           >
             Join waitlist
           </a>
-        </nav>
+        </div>
 
         {/* Mobile hamburger */}
         <button
