@@ -737,10 +737,63 @@
       color: var(--text-muted);
     }
 
+    /* ── HAMBURGER ───────────────────────────────────── */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .nav-hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--black);
+      border-radius: 2px;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    nav.nav-menu-open .nav-hamburger span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    nav.nav-menu-open .nav-hamburger span:nth-child(2) {
+      opacity: 0;
+    }
+    nav.nav-menu-open .nav-hamburger span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
     /* ── RESPONSIVE ──────────────────────────────────── */
     @media (max-width: 900px) {
       nav { padding: 16px 24px; }
-      .nav-links { display: none; }
+
+      .nav-hamburger { display: flex; }
+
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: 8px 24px 20px;
+        background: rgba(240,237,230,0.97);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+      }
+      .nav-links.nav-open { display: flex; }
+      .nav-links li { border-bottom: 1px solid var(--border); }
+      .nav-links li:last-child { border-bottom: none; }
+      .nav-links li a { display: block; padding: 14px 0; font-size: 15px; }
+      .nav-links .nav-cta {
+        display: inline-block;
+        margin: 12px 0 4px;
+      }
 
       section { padding: 64px 24px; }
 
@@ -773,6 +826,8 @@
 
       .hero-wordmark { font-size: 52px; }
       .hero-ring { width: 480px; height: 480px; border-width: 48px; }
+      .hero-logo { overflow: hidden; max-width: 100%; }
+      .hero-logo img { max-width: 100%; height: auto; }
     }
 
     @media (max-width: 600px) {
@@ -782,6 +837,9 @@
       .newsletter-section { padding: 0 24px 64px; }
       .newsletter-card { padding: 36px 24px; }
       .flywheel-inner { padding: 0 24px; }
+      .newsletter-input-row { flex-direction: column; gap: 10px; }
+      .newsletter-input { width: 100%; }
+      .newsletter-input-row .btn-primary { width: 100%; justify-content: center; }
     }
   </style>
 </head>
@@ -793,13 +851,37 @@
       <img src="/index.html assets/logo.png" alt="bohemo." />
       <span class="nav-wordmark">bohemo.</span>
     </a>
-    <ul class="nav-links">
+    <ul class="nav-links" id="nav-links">
       <li><a href="#platform">Platform</a></li>
       <li><a href="#tools">Tools</a></li>
       <li><a href="#newsletter">Newsletter</a></li>
       <li><a href="#newsletter" class="nav-cta">Join the waitlist</a></li>
     </ul>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
   </nav>
+  <script>
+    (function () {
+      var btn = document.getElementById('nav-hamburger');
+      var nav = btn.closest('nav');
+      var links = document.getElementById('nav-links');
+      btn.addEventListener('click', function () {
+        var open = nav.classList.toggle('nav-menu-open');
+        links.classList.toggle('nav-open', open);
+        btn.setAttribute('aria-expanded', String(open));
+      });
+      links.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', function () {
+          nav.classList.remove('nav-menu-open');
+          links.classList.remove('nav-open');
+          btn.setAttribute('aria-expanded', 'false');
+        });
+      });
+    })();
+  </script>
 
   <!-- HERO -->
   <div class="hero" id="home">
@@ -1003,7 +1085,7 @@
         <h2 class="newsletter-title">AI intelligence, every week.<br>No hype. No noise.</h2>
         <p class="newsletter-body">The bohemo. newsletter curates the tools, news, and analysis that matter to builders in India and Southeast Asia. Authoritative. Direct. Unmissable.</p>
       </div>
-      <<div class="newsletter-form">
+      <div class="newsletter-form">
   <div class="newsletter-input-row">
     <input type="email" class="newsletter-input" placeholder="your@email.com" id="email-input" />
     <button class="btn-primary" type="button" onclick="handleSubscribe()" id="sub-btn" style="white-space:nowrap; flex-shrink:0;">
