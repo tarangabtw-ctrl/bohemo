@@ -22,8 +22,9 @@ export default function Navbar() {
         {/* Wordmark */}
         <Link
           href="/"
-          className="text-base font-semibold tracking-tight text-ink"
+          className="flex items-center gap-2 text-base font-semibold tracking-tight text-ink"
         >
+          <img src="/assets/logo.png" alt="bohemo." style={{ height: '32px', width: 'auto' }} />
           bohemo.
         </Link>
 
