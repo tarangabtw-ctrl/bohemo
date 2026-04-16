@@ -1003,15 +1003,55 @@
         <h2 class="newsletter-title">AI intelligence, every week.<br>No hype. No noise.</h2>
         <p class="newsletter-body">The bohemo. newsletter curates the tools, news, and analysis that matter to builders in India and Southeast Asia. Authoritative. Direct. Unmissable.</p>
       </div>
-      <div class="newsletter-form">
-        <div class="newsletter-input-row">
-          <input type="email" class="newsletter-input" placeholder="your@email.com" />
-          <button class="btn-primary" type="submit" style="white-space:nowrap; flex-shrink:0;">
-            Subscribe
-          </button>
-        </div>
-        <p class="newsletter-fine">No spam. No AI-generated fluff. Unsubscribe anytime. bohemo.</p>
-      </div>
+      <<div class="newsletter-form">
+  <div class="newsletter-input-row">
+    <input type="email" class="newsletter-input" placeholder="your@email.com" id="email-input" />
+    <button class="btn-primary" type="button" onclick="handleSubscribe()" id="sub-btn" style="white-space:nowrap; flex-shrink:0;">
+      Subscribe
+    </button>
+  </div>
+  <p class="newsletter-fine" id="newsletter-msg">No spam. No AI-generated fluff. Unsubscribe anytime. bohemo.</p>
+</div>
+
+<script>
+async function handleSubscribe() {
+  const email = document.getElementById('email-input').value;
+  const btn = document.getElementById('sub-btn');
+  const msg = document.getElementById('newsletter-msg');
+
+  if (!email || !email.includes('@')) {
+    msg.textContent = 'Please enter a valid email.';
+    return;
+  }
+
+  btn.textContent = 'Subscribing...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('https://api.convertkit.com/v3/forms/9333668/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        api_key: 'kit_695fb18248008450325d395edcd71a65',
+        email: email
+      })
+    });
+
+    if (res.ok) {
+      btn.textContent = '✓ Subscribed';
+      msg.textContent = "You're in. First issue coming soon.";
+      document.getElementById('email-input').value = '';
+      posthog.capture('newsletter_signup', { email });
+    } else {
+      throw new Error();
+    }
+  } catch {
+    btn.textContent = 'Subscribe';
+    btn.disabled = false;
+    msg.textContent = 'Something went wrong. Try again.';
+  }
+}
+</script>
     </div>
   </div>
 
