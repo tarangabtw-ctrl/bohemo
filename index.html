@@ -1028,14 +1028,15 @@ async function handleSubscribe() {
   btn.disabled = true;
 
   try {
-    const res = await fetch('https://api.convertkit.com/v3/forms/9333668/subscribe', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        api_key: 'kit_695fb18248008450325d395edcd71a65',
-        email: email
-      })
-    });
+    cconst res = await fetch('https://api.convertkit.com/v3/forms/9333668/subscribe', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+   api_key: 'Hoq0cpGOJ4lB7b1mj5ushw',
+    email: email,
+    first_name: ''
+  })
+});
 
     if (res.ok) {
       btn.textContent = '✓ Subscribed';
