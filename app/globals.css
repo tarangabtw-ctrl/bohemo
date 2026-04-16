@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --black: #0D0D0D;
+  --cream: #F0EDE6;
+  --cream-dark: #E8E4DC;
+  --cream-mid: #EBE7DF;
+  --text-muted: #6B6560;
+  --text-secondary: #3D3A35;
+  --pill-bg: #E3DFD7;
+  --border: rgba(13, 13, 13, 0.10);
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--cream);
+  color: var(--black);
+}
+
+/* Pill shape utility used throughout the design system */
+@layer components {
+  .pill {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-medium;
+  }
+
+  .pill-outline {
+    @apply pill border border-[rgba(13,13,13,0.15)] text-secondary bg-transparent;
+  }
+
+  .pill-filled {
+    @apply pill bg-[#E3DFD7] text-secondary;
+  }
+
+  .pill-dark {
+    @apply pill bg-ink text-cream;
+  }
+
+  .card {
+    @apply rounded-2xl border border-[rgba(13,13,13,0.10)] bg-cream-dark p-5 transition-all duration-200;
+  }
+
+  .card-hover {
+    @apply card hover:border-[rgba(13,13,13,0.25)] hover:bg-cream-mid;
+  }
+}
