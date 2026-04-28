@@ -21,11 +21,12 @@ export default function HomePage() {
     setSubDisabled(true)
 
     try {
-      const res = await fetch('https://api.convertkit.com/v3/forms/9333668/subscribe', {
+      const kitFormId = process.env.NEXT_PUBLIC_KIT_FORM_ID
+      const res = await fetch(`https://api.convertkit.com/v3/forms/${kitFormId}/subscribe`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          api_key: 'Hoq0cpGOJ4lB7b1mj5ushw',
+          api_key: process.env.NEXT_PUBLIC_KIT_API_KEY,
           email,
           first_name: '',
         }),
