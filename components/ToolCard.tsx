@@ -1,21 +1,24 @@
+'use client'
+
 import Link from 'next/link'
 import type { Tool } from '@/types'
 
-const CATEGORY_COLOURS: Record<string, string> = {
-  Writing:     'bg-blue-50   text-blue-700  border-blue-200',
-  Code:        'bg-violet-50 text-violet-700 border-violet-200',
-  Design:      'bg-pink-50   text-pink-700   border-pink-200',
-  Video:       'bg-orange-50 text-orange-700 border-orange-200',
-  Research:    'bg-teal-50   text-teal-700   border-teal-200',
-  Productivity:'bg-yellow-50 text-yellow-700 border-yellow-200',
-  Marketing:   'bg-rose-50   text-rose-700   border-rose-200',
+// Project uses PostHog via CDN script (window.posthog); no React package needed
+declare const window: Window & { posthog?: { capture: (event: string, props?: object) => void } }
+
+// ── Badge styles ──────────────────────────────────────────────────────────────
+const PRICE_BADGE: Record<string, string> = {
+  free:          'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  freemium:      'bg-amber-50   text-amber-700   border border-amber-200',
+  paid:          'bg-[#0D0D0D]  text-[#F0EDE6]   border-transparent',
+  'open-source': 'bg-lime-50    text-lime-700    border border-lime-200',
 }
 
-const PRICE_COLOURS: Record<string, string> = {
-  free:          'bg-emerald-50 text-emerald-700 border-emerald-200',
-  freemium:      'bg-sky-50     text-sky-700     border-sky-200',
-  paid:          'bg-[#E3DFD7] text-secondary   border-[rgba(13,13,13,0.15)]',
-  'open-source': 'bg-lime-50   text-lime-700    border-lime-200',
+const PRICE_LABEL: Record<string, string> = {
+  free:          'Free',
+  freemium:      'Freemium',
+  paid:          'Paid',
+  'open-source': 'Open Source',
 }
 
 interface Props {
@@ -23,27 +26,44 @@ interface Props {
 }
 
 export default function ToolCard({ tool }: Props) {
-  const categoryStyle = CATEGORY_COLOURS[tool.category] ?? 'bg-[#E3DFD7] text-secondary border-[rgba(13,13,13,0.15)]'
-  const priceStyle    = PRICE_COLOURS[tool.price_type]   ?? 'bg-[#E3DFD7] text-secondary border-[rgba(13,13,13,0.15)]'
+  const priceStyle = PRICE_BADGE[tool.price_type] ?? 'bg-[#E3DFD7] text-[#3D3A35] border border-black/10'
+  const priceLabel = tool.price_label ?? PRICE_LABEL[tool.price_type] ?? tool.price_type
 
   return (
-    <Link href={`/tools/${tool.slug}`} className="group block">
-      <article className="card-hover h-full flex flex-col gap-3">
-        {/* Header row */}
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className={`pill border text-xs ${categoryStyle}`}>
-              {tool.category}
-            </span>
-            <span className={`pill border text-xs ${priceStyle}`}>
-              {tool.price_label ?? tool.price_type}
-            </span>
+    <Link
+      href={`/tools/${tool.slug}`}
+      className="group block h-full"
+      onClick={() => {
+        window.posthog?.capture('tool_clicked', {
+          tool_name: tool.name,
+          tool_url:  tool.url,
+          source:    'card',
+        })
+      }}
+    >
+      <article className="bg-white rounded-2xl p-5 border border-black/[0.08] hover:border-black/20 hover:shadow-md transition-all duration-200 h-full flex flex-col">
+
+        {/* ── Header: logo mark + name + category ─────── */}
+        <div className="flex items-start gap-3">
+          {/* Logo / initial fallback */}
+          <div
+            aria-hidden="true"
+            className="w-10 h-10 rounded-lg bg-[#F0EDE6] flex items-center justify-center shrink-0 text-sm font-bold text-[#6B6560] select-none"
+          >
+            {tool.name.charAt(0).toUpperCase()}
           </div>
+
+          {/* Name + category */}
+          <div className="min-w-0 flex-1">
+            <h3 className="text-base font-semibold text-[#0D0D0D] leading-snug group-hover:underline decoration-1 underline-offset-2 truncate">
+              {tool.name}
+            </h3>
+            <p className="text-xs text-[#6B6560] mt-0.5">{tool.category}</p>
+          </div>
+
+          {/* Verified badge */}
           {tool.verified && (
-            <span
-              title="Bohemo Verified"
-              className="flex items-center gap-1 rounded-full bg-ink px-2 py-0.5 text-[10px] font-semibold text-cream shrink-0"
-            >
+            <span className="flex items-center gap-1 rounded-full bg-[#0D0D0D] px-2 py-0.5 text-[10px] font-semibold text-[#F0EDE6] shrink-0">
               <svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden="true">
                 <path d="M2 5.5L4 7.5L8 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -52,29 +72,21 @@ export default function ToolCard({ tool }: Props) {
           )}
         </div>
 
-        {/* Tool name */}
-        <h3 className="font-semibold text-base text-ink leading-snug group-hover:underline decoration-1 underline-offset-2">
-          {tool.name}
-        </h3>
-
-        {/* Description */}
-        <p className="text-sm text-muted leading-relaxed line-clamp-3 flex-1">
+        {/* ── Description ─────────────────────────────── */}
+        <p className="text-sm text-[#6B6560] leading-relaxed mt-3 line-clamp-2 flex-1">
           {tool.description}
         </p>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between pt-1">
-          <div className="flex flex-wrap gap-1">
-            {tool.tags.slice(0, 2).map((tag) => (
-              <span key={tag} className="pill-filled text-[11px]">
-                {tag}
-              </span>
-            ))}
-          </div>
-          <span className="text-xs font-medium text-muted group-hover:text-ink transition-colors">
+        {/* ── Footer: pricing badge + visit link ──────── */}
+        <div className="mt-4 pt-3 border-t border-black/[0.06] flex items-center justify-between gap-2">
+          <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${priceStyle}`}>
+            {priceLabel}
+          </span>
+          <span className="text-xs font-medium text-[#6B6560] group-hover:text-[#0D0D0D] transition-colors shrink-0">
             Visit →
           </span>
         </div>
+
       </article>
     </Link>
   )

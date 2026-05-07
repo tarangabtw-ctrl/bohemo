@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import ToolCard from '@/components/ToolCard'
 import ToolFilter from '@/components/ToolFilter'
+import ToolSearch from '@/components/ToolSearch'
 import { supabase } from '@/lib/supabase'
 import { SEED_TOOLS } from '@/lib/data'
 import type { Tool } from '@/types'
@@ -31,32 +32,45 @@ export default async function ToolsPage({ searchParams }: Props) {
   const { category, price } = searchParams
   const tools = await getTools(category, price)
 
-  const heading = category ? `${category} tools` : 'AI Tools Directory'
-
   return (
     <div className="mx-auto max-w-6xl px-6 py-12">
-      {/* Page header */}
+
+      {/* ── Page header ───────────────────────────────── */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-ink mb-2">{heading}</h1>
-        <p className="text-muted text-sm">
-          Curated AI tools for India and Southeast Asia.{' '}
-          <span className="text-secondary font-medium">{tools.length} tools</span>
-          {(category || price) && (
-            <a href="/tools" className="ml-2 underline underline-offset-2 hover:text-ink transition-colors">
-              Clear filters
-            </a>
-          )}
+        <div className="flex items-baseline gap-3 flex-wrap">
+          <h1 className="text-4xl font-bold tracking-tight text-[#0D0D0D]">
+            AI Tools Directory
+          </h1>
+          <span className="text-xs px-3 py-1 rounded-full border border-black/10 text-[#6B6560] font-medium">
+            {tools.length} tools
+          </span>
+        </div>
+        <p className="text-[#6B6560] text-base mt-2">
+          The best AI tools for India and Southeast Asia
         </p>
+        {(category || price) && (
+          <a
+            href="/tools"
+            className="mt-2 inline-block text-xs font-medium text-[#6B6560] underline underline-offset-2 hover:text-[#0D0D0D] transition-colors"
+          >
+            Clear filters
+          </a>
+        )}
       </div>
 
-      {/* Filters — wrapped in Suspense because useSearchParams inside */}
-      <div className="mb-8 rounded-2xl bg-cream-mid border border-[rgba(13,13,13,0.08)] px-5 py-4">
+      {/* ── Search ────────────────────────────────────── */}
+      <div className="mb-4">
+        <ToolSearch />
+      </div>
+
+      {/* ── Filter bar ────────────────────────────────── */}
+      <div className="mb-8 pb-6 border-b border-black/[0.08]">
         <Suspense fallback={<div className="h-10 animate-pulse rounded-xl bg-cream-dark" />}>
           <ToolFilter />
         </Suspense>
       </div>
 
-      {/* Tool grid */}
+      {/* ── Tool grid ─────────────────────────────────── */}
       {tools.length === 0 ? (
         <div className="py-20 text-center">
           <p className="text-muted">No tools found for those filters.</p>
