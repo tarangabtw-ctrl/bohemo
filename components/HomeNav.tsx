@@ -3,6 +3,9 @@
 import { useState } from 'react'
 import Link from 'next/link'
 
+// Project uses PostHog via CDN script (window.posthog); no React package needed
+declare const window: Window & { posthog?: { capture: (event: string, props?: object) => void } }
+
 export function HomeNav() {
   const [navOpen, setNavOpen] = useState(false)
 
@@ -23,7 +26,14 @@ export function HomeNav() {
         </li>
         <li><a href="#newsletter" onClick={() => setNavOpen(false)}>Newsletter</a></li>
         <li>
-          <a href="#newsletter" className="nav-cta" onClick={() => setNavOpen(false)}>
+          <a
+            href="#newsletter"
+            className="nav-cta"
+            onClick={() => {
+              setNavOpen(false)
+              window.posthog?.capture('waitlist_click', { location: 'nav' })
+            }}
+          >
             Join the waitlist
           </a>
         </li>

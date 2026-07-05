@@ -39,6 +39,10 @@ export default function ToolCard({ tool }: Props) {
           tool_url:  tool.url,
           source:    'card',
         })
+        window.posthog?.capture('tool_card_click', {
+          tool_name: tool.name,
+          category:  tool.category,
+        })
       }}
     >
       <article className="bg-white rounded-2xl p-5 border border-black/[0.08] hover:border-black/20 hover:shadow-md transition-all duration-200 h-full flex flex-col">

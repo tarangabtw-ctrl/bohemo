@@ -4,6 +4,9 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
+// Project uses PostHog via CDN script (window.posthog); no React package needed
+declare const window: Window & { posthog?: { capture: (event: string, props?: object) => void } }
+
 const NAV_LINKS = [
   { label: 'Tools', href: '/tools' },
   { label: 'News', href: '/news' },
@@ -46,6 +49,7 @@ export default function Navbar() {
           <a
             href="/#newsletter"
             className="ml-2 inline-flex items-center min-h-[44px] rounded-full bg-ink px-4 py-1.5 text-sm font-medium text-cream hover:bg-secondary transition-colors"
+            onClick={() => window.posthog?.capture('waitlist_click', { location: 'nav' })}
           >
             Join waitlist
           </a>
@@ -86,7 +90,10 @@ export default function Navbar() {
           ))}
           <a
             href="/#newsletter"
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              setOpen(false)
+              window.posthog?.capture('waitlist_click', { location: 'nav' })
+            }}
             className="flex items-center justify-center min-h-[44px] rounded-full bg-ink px-4 py-2 text-sm font-medium text-cream text-center mt-1"
           >
             Join waitlist

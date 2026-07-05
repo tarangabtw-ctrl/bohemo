@@ -1,6 +1,8 @@
 import { supabase } from '@/lib/supabase'
 import { SEED_NEWS } from '@/lib/data'
 import { SITE_URL } from '@/lib/site'
+import NewsRegionFilter from '@/components/NewsRegionFilter'
+import NewsCardLink from '@/components/NewsCardLink'
 import type { NewsArticle } from '@/types'
 import type { Metadata } from 'next'
 
@@ -90,29 +92,7 @@ export default async function NewsPage({ searchParams }: Props) {
             Region
           </span>
           <div className="flex items-center gap-2 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            <a
-              href="/news"
-              className={`pill border text-sm sm:text-xs transition-colors whitespace-nowrap min-h-[44px] ${
-                !region
-                  ? 'bg-[#0D0D0D] text-[#F0EDE6] border-[#0D0D0D]'
-                  : 'bg-transparent text-[#0D0D0D] border-black/20 hover:border-black/60'
-              }`}
-            >
-              All
-            </a>
-            {REGIONS.map((r) => (
-              <a
-                key={r}
-                href={`/news?region=${encodeURIComponent(r)}`}
-                className={`pill border text-sm sm:text-xs transition-colors whitespace-nowrap min-h-[44px] ${
-                  region === r
-                    ? 'bg-[#0D0D0D] text-[#F0EDE6] border-[#0D0D0D]'
-                    : 'bg-transparent text-[#0D0D0D] border-black/20 hover:border-black/60'
-                }`}
-              >
-                {r}
-              </a>
-            ))}
+            <NewsRegionFilter regions={REGIONS} currentRegion={region} />
           </div>
         </div>
       </div>
@@ -129,10 +109,10 @@ export default async function NewsPage({ searchParams }: Props) {
 
       {/* ── Featured article (index 0) ───────────────────── */}
       {featured && (
-        <a
+        <NewsCardLink
           href={featured.url}
-          target="_blank"
-          rel="noopener noreferrer"
+          articleTitle={featured.title}
+          region={featured.region}
           className="group block mb-2"
         >
           <article className="bg-white rounded-2xl p-8 border border-black/[0.08] hover:border-black/20 hover:shadow-md transition-all duration-200">
@@ -163,18 +143,18 @@ export default async function NewsPage({ searchParams }: Props) {
               </span>
             </div>
           </article>
-        </a>
+        </NewsCardLink>
       )}
 
       {/* ── Compact list (remaining articles) ───────────── */}
       {rest.length > 0 && (
         <div className="mt-8">
           {rest.map((article) => (
-            <a
+            <NewsCardLink
               key={article.id}
               href={article.url}
-              target="_blank"
-              rel="noopener noreferrer"
+              articleTitle={article.title}
+              region={article.region}
               className="group block py-5 border-b border-black/[0.08] last:border-b-0"
             >
               {/* Top row: region badge + source (left) | date (right) */}
@@ -197,7 +177,7 @@ export default async function NewsPage({ searchParams }: Props) {
               <p className="text-sm text-[#6B6560] mt-1 line-clamp-2 leading-relaxed">
                 {article.excerpt}
               </p>
-            </a>
+            </NewsCardLink>
           ))}
         </div>
       )}

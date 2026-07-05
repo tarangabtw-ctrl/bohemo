@@ -30,6 +30,10 @@ export default function ToolFilter() {
         filter_type:  key as 'category' | 'price',
         filter_value: value || 'all',
       })
+      window.posthog?.capture('tools_filter_change', {
+        filter_type: key as 'category' | 'price',
+        value:       value || 'all',
+      })
     },
     [router, pathname, searchParams],
   )

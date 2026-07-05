@@ -1,7 +1,7 @@
-import Script from 'next/script'
 import Link from 'next/link'
 import { HomeNav } from '@/components/HomeNav'
 import { NewsletterForm } from '@/components/NewsletterForm'
+import WaitlistButton from '@/components/WaitlistButton'
 import { supabase } from '@/lib/supabase'
 import { truncate, formatRelativeTime } from '@/lib/utils'
 import { SITE_URL } from '@/lib/site'
@@ -70,15 +70,6 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
       />
 
-      {/* PostHog analytics */}
-      <Script
-        id="posthog-init"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.people.toString(1)+" stub"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys onSessionId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);posthog.init('phc_pXLMGWEYwx2MY9KBZLowf8LnzcfFfsSdSGdCoXDjWZc5',{api_host:'https://app.posthog.com'})`,
-        }}
-      />
-
       {/* NAV */}
       <HomeNav />
 
@@ -103,7 +94,7 @@ export default async function HomePage() {
             Southeast Asia, not Silicon Valley.
           </p>
           <div className="hero-actions">
-            <a href="#newsletter" className="btn-primary">
+            <WaitlistButton location="hero" className="btn-primary">
               Join the waitlist
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <path
@@ -114,7 +105,7 @@ export default async function HomePage() {
                   strokeLinejoin="round"
                 />
               </svg>
-            </a>
+            </WaitlistButton>
             <a href="#platform" className="btn-secondary">See what&apos;s coming</a>
           </div>
         </div>
