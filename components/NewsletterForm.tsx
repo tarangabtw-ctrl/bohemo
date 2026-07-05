@@ -2,74 +2,89 @@
 
 import { useState } from 'react'
 
-type PostHogWindow = Window & {
-  posthog?: { capture: (event: string, props?: Record<string, unknown>) => void }
+type Status = 'idle' | 'loading' | 'success' | 'duplicate' | 'error'
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+interface Props {
+  variant?: 'default'
+  className?: string
 }
 
-export function NewsletterForm() {
+export function NewsletterForm({ className }: Props = {}) {
   const [email, setEmail] = useState('')
-  const [subBtn, setSubBtn] = useState('Subscribe')
-  const [subMsg, setSubMsg] = useState('No spam. No AI-generated fluff. Unsubscribe anytime. bohemo.')
-  const [subDisabled, setSubDisabled] = useState(false)
+  const [status, setStatus] = useState<Status>('idle')
+  const [validationError, setValidationError] = useState('')
 
-  async function handleSubscribe() {
-    if (!email || !email.includes('@')) {
-      setSubMsg('Please enter a valid email.')
+  async function handleSubmit() {
+    if (!EMAIL_REGEX.test(email)) {
+      setValidationError('Please enter a valid email.')
       return
     }
-
-    setSubBtn('Subscribing...')
-    setSubDisabled(true)
+    setValidationError('')
+    setStatus('loading')
 
     try {
-      const kitFormId = process.env.NEXT_PUBLIC_KIT_FORM_ID
-      const res = await fetch(`https://api.convertkit.com/v3/forms/${kitFormId}/subscribe`, {
+      const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          api_key: process.env.NEXT_PUBLIC_KIT_API_KEY,
-          email,
-          first_name: '',
-        }),
+        body: JSON.stringify({ email }),
       })
+      const data = await res.json().catch(() => ({}))
 
-      if (res.ok) {
-        setSubBtn('✓ Subscribed')
-        setSubMsg("You're in. First issue coming soon.")
-        setEmail('')
-        ;(window as PostHogWindow).posthog?.capture('newsletter_signup', { email })
+      if (res.ok && data.status === 'duplicate') {
+        setStatus('duplicate')
+      } else if (res.ok && data.status === 'success') {
+        setStatus('success')
       } else {
-        throw new Error()
+        setStatus('error')
       }
     } catch {
-      setSubBtn('Subscribe')
-      setSubDisabled(false)
-      setSubMsg('Something went wrong. Try again.')
+      setStatus('error')
     }
   }
 
+  const wrapperClass = className ? `newsletter-form ${className}` : 'newsletter-form'
+
+  if (status === 'success') {
+    return (
+      <div className={wrapperClass}>
+        <p className="newsletter-fine">You&apos;re in! Watch your inbox for the next issue.</p>
+      </div>
+    )
+  }
+
   return (
-    <div className="newsletter-form">
+    <div className={wrapperClass}>
       <div className="newsletter-input-row">
         <input
           type="email"
           className="newsletter-input"
           placeholder="your@email.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSubscribe()}
+          disabled={status === 'loading'}
+          onChange={(e) => {
+            setEmail(e.target.value)
+            setValidationError('')
+          }}
+          onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
         />
         <button
           className="btn-primary"
           type="button"
-          onClick={handleSubscribe}
-          disabled={subDisabled}
+          onClick={handleSubmit}
+          disabled={status === 'loading'}
           style={{ whiteSpace: 'nowrap', flexShrink: 0 }}
         >
-          {subBtn}
+          {status === 'loading' ? 'Subscribing…' : 'Subscribe'}
         </button>
       </div>
-      <p className="newsletter-fine">{subMsg}</p>
+      <p className="newsletter-fine">
+        {validationError ||
+          (status === 'duplicate' && "You're already on the list.") ||
+          (status === 'error' && 'Something went wrong — try again.') ||
+          'No spam. No AI-generated fluff. Unsubscribe anytime. bohemo.'}
+      </p>
     </div>
   )
 }
