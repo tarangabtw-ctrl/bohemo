@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import Link from 'next/link'
 import type { Tool } from '@/types'
+import ToolCard from '@/components/ToolCard'
 
 // Project uses PostHog via CDN script (window.posthog); no React package needed
 declare const window: Window & { posthog?: { capture: (event: string, props?: object) => void } }
@@ -16,9 +17,10 @@ const PRICE_LABELS: Record<string, string> = {
 
 interface Props {
   tool: Tool
+  similarTools: Tool[]
 }
 
-export default function ToolPageClient({ tool }: Props) {
+export default function ToolPageClient({ tool, similarTools }: Props) {
   // tool_viewed — fires once on mount (empty dep array per spec)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -87,27 +89,33 @@ export default function ToolPageClient({ tool }: Props) {
       <div className="border-t border-[rgba(13,13,13,0.10)] my-8" />
 
       {/* Tags & regions */}
-      <div className="grid sm:grid-cols-2 gap-6">
-        <div>
-          <h2 className="text-xs font-semibold text-muted uppercase tracking-wide mb-3">Tags</h2>
-          <div className="flex flex-wrap gap-1.5">
-            {tool.tags.map((tag) => (
-              <span key={tag} className="pill-filled">{tag}</span>
-            ))}
-          </div>
-        </div>
+      {((tool.tags?.length ?? 0) > 0 || (tool.region_relevance?.length ?? 0) > 0) && (
+        <div className="grid sm:grid-cols-2 gap-6">
+          {(tool.tags?.length ?? 0) > 0 && (
+            <div>
+              <h2 className="text-xs font-semibold text-muted uppercase tracking-wide mb-3">Tags</h2>
+              <div className="flex flex-wrap gap-1.5">
+                {tool.tags.map((tag) => (
+                  <span key={tag} className="pill-filled">{tag}</span>
+                ))}
+              </div>
+            </div>
+          )}
 
-        <div>
-          <h2 className="text-xs font-semibold text-muted uppercase tracking-wide mb-3">
-            Region relevance
-          </h2>
-          <div className="flex flex-wrap gap-1.5">
-            {tool.region_relevance.map((r) => (
-              <span key={r} className="pill-outline">{r}</span>
-            ))}
-          </div>
+          {(tool.region_relevance?.length ?? 0) > 0 && (
+            <div>
+              <h2 className="text-xs font-semibold text-muted uppercase tracking-wide mb-3">
+                Relevant in:
+              </h2>
+              <div className="flex flex-wrap gap-1.5">
+                {tool.region_relevance.map((r) => (
+                  <span key={r} className="pill-outline">{r}</span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-      </div>
+      )}
 
       {/* Divider */}
       <div className="border-t border-[rgba(13,13,13,0.10)] my-8" />
@@ -118,6 +126,20 @@ export default function ToolPageClient({ tool }: Props) {
       >
         Browse more tools
       </Link>
+
+      {/* Similar tools */}
+      {similarTools.length > 0 && (
+        <div className="mt-12">
+          <h2 className="text-xs font-semibold text-muted uppercase tracking-wide mb-4">
+            Similar tools
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {similarTools.map((t) => (
+              <ToolCard key={t.id} tool={t} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
