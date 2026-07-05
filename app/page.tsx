@@ -4,7 +4,33 @@ import { HomeNav } from '@/components/HomeNav'
 import { NewsletterForm } from '@/components/NewsletterForm'
 import { supabase } from '@/lib/supabase'
 import { truncate, formatRelativeTime } from '@/lib/utils'
+import { SITE_URL } from '@/lib/site'
 import type { Tool, NewsArticle } from '@/types'
+import type { Metadata } from 'next'
+
+const HOME_TITLE = 'bohemo. — AI tools & news for India and Southeast Asia'
+const HOME_DESCRIPTION =
+  'Discover the best AI tools and stay up to date with AI news — curated for India and Southeast Asia.'
+
+export const metadata: Metadata = {
+  title: HOME_TITLE,
+  description: HOME_DESCRIPTION,
+  openGraph: {
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    url: SITE_URL,
+    siteName: 'bohemo.',
+    type: 'website',
+  },
+}
+
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'bohemo.',
+  url: SITE_URL,
+  description: HOME_DESCRIPTION,
+}
 
 type NewsHeadline = Pick<NewsArticle, 'title' | 'source' | 'published_at' | 'url'>
 
@@ -39,6 +65,11 @@ export default async function HomePage() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
+
       {/* PostHog analytics */}
       <Script
         id="posthog-init"

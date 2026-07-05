@@ -4,7 +4,24 @@ import ToolFilter from '@/components/ToolFilter'
 import ToolSearch from '@/components/ToolSearch'
 import { supabase } from '@/lib/supabase'
 import { SEED_TOOLS } from '@/lib/data'
+import { SITE_URL } from '@/lib/site'
 import type { Tool } from '@/types'
+import type { Metadata } from 'next'
+
+const TOOLS_TITLE = 'AI Tools Directory — bohemo.'
+const TOOLS_DESCRIPTION = 'The best AI tools for India and Southeast Asia, curated by category, use case, and price.'
+
+export const metadata: Metadata = {
+  title: TOOLS_TITLE,
+  description: TOOLS_DESCRIPTION,
+  openGraph: {
+    title: TOOLS_TITLE,
+    description: TOOLS_DESCRIPTION,
+    url: `${SITE_URL}/tools`,
+    siteName: 'bohemo.',
+    type: 'website',
+  },
+}
 
 interface Props {
   searchParams: { category?: string; price?: string }

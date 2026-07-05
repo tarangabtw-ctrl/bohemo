@@ -1,6 +1,23 @@
 import { supabase } from '@/lib/supabase'
 import { SEED_NEWS } from '@/lib/data'
+import { SITE_URL } from '@/lib/site'
 import type { NewsArticle } from '@/types'
+import type { Metadata } from 'next'
+
+const NEWS_TITLE = 'AI News — bohemo.'
+const NEWS_DESCRIPTION = "What's happening in AI across India and Southeast Asia."
+
+export const metadata: Metadata = {
+  title: NEWS_TITLE,
+  description: NEWS_DESCRIPTION,
+  openGraph: {
+    title: NEWS_TITLE,
+    description: NEWS_DESCRIPTION,
+    url: `${SITE_URL}/news`,
+    siteName: 'bohemo.',
+    type: 'website',
+  },
+}
 
 // ── Region badge colours ──────────────────────────────────────────────────────
 const REGION_BADGE: Record<string, string> = {

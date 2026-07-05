@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import SiteShell from './SiteShell'
+import { SITE_URL } from '@/lib/site'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -10,6 +11,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: 'bohemo. — AI tools & news for India and Southeast Asia',
   description:
     'Discover the best AI tools and stay up to date with AI news — curated for India and Southeast Asia.',

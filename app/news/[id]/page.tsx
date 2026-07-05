@@ -2,7 +2,9 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { SEED_NEWS } from '@/lib/data'
+import { SITE_URL } from '@/lib/site'
 import type { NewsArticle } from '@/types'
+import type { Metadata } from 'next'
 
 interface Props {
   params: { id: string }
@@ -51,6 +53,29 @@ async function getRelatedArticles(region: string, id: string): Promise<NewsArtic
   return SEED_NEWS.filter((n) => n.region === region && n.id !== id).slice(0, 3)
 }
 
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const article = await getArticle(params.id)
+  if (!article) {
+    return {
+      title: 'Story not found — bohemo.',
+      description: 'This news story could not be found in the bohemo. feed.',
+    }
+  }
+
+  const title = `${article.title} — bohemo.`
+  return {
+    title,
+    description: article.excerpt ?? undefined,
+    openGraph: {
+      title,
+      description: article.excerpt ?? undefined,
+      url: `${SITE_URL}/news/${article.id}`,
+      siteName: 'bohemo.',
+      type: 'article',
+    },
+  }
+}
+
 export default async function NewsArticlePage({ params }: Props) {
   const article = await getArticle(params.id)
   if (!article) notFound()
@@ -58,8 +83,23 @@ export default async function NewsArticlePage({ params }: Props) {
   const related = await getRelatedArticles(article.region, article.id)
   const displayDate = formatDate(article.published_at) ?? formatDate(article.created_at)
 
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: article.title,
+    description: article.excerpt,
+    url: `${SITE_URL}/news/${article.id}`,
+    ...(article.published_at ? { datePublished: article.published_at } : {}),
+    author: { '@type': 'Organization', name: article.source },
+    publisher: { '@type': 'Organization', name: article.source },
+  }
+
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
       {/* Back link */}
       <Link
         href="/news"
