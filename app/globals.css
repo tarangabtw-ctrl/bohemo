@@ -866,3 +866,27 @@ nav.nav-menu-open .nav-hamburger span:nth-child(3) {
     @apply card hover:border-[rgba(13,13,13,0.25)] hover:bg-cream-mid;
   }
 }
+
+/* ── HOMEPAGE PLATFORM CARDS: latest news list (live data) ── */
+.platform-news-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.platform-news-item:last-child {
+  border-bottom: none;
+}
+
+.platform-news-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--black);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.platform-news-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}

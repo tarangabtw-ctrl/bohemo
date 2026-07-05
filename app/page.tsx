@@ -1,52 +1,41 @@
-'use client'
-
-import { useState } from 'react'
 import Script from 'next/script'
 import Link from 'next/link'
+import { HomeNav } from '@/components/HomeNav'
+import { NewsletterForm } from '@/components/NewsletterForm'
+import { supabase } from '@/lib/supabase'
+import { truncate, formatRelativeTime } from '@/lib/utils'
+import type { Tool, NewsArticle } from '@/types'
 
-export default function HomePage() {
-  const [navOpen, setNavOpen] = useState(false)
-  const [email, setEmail] = useState('')
-  const [subBtn, setSubBtn] = useState('Subscribe')
-  const [subMsg, setSubMsg] = useState('No spam. No AI-generated fluff. Unsubscribe anytime. bohemo.')
-  const [subDisabled, setSubDisabled] = useState(false)
+type NewsHeadline = Pick<NewsArticle, 'title' | 'source' | 'published_at' | 'url'>
 
-  async function handleSubscribe() {
-    if (!email || !email.includes('@')) {
-      setSubMsg('Please enter a valid email.')
-      return
-    }
+async function getToolOfWeek(): Promise<Tool | null> {
+  if (!supabase) return null
 
-    setSubBtn('Subscribing...')
-    setSubDisabled(true)
+  const { data, error } = await supabase
+    .from('tools')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(1)
 
-    try {
-      const kitFormId = process.env.NEXT_PUBLIC_KIT_FORM_ID
-      const res = await fetch(`https://api.convertkit.com/v3/forms/${kitFormId}/subscribe`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          api_key: process.env.NEXT_PUBLIC_KIT_API_KEY,
-          email,
-          first_name: '',
-        }),
-      })
+  if (error || !data || data.length === 0) return null
+  return data[0] as Tool
+}
 
-      if (res.ok) {
-        setSubBtn('✓ Subscribed')
-        setSubMsg("You're in. First issue coming soon.")
-        setEmail('')
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ;(window as any).posthog?.capture('newsletter_signup', { email })
-      } else {
-        throw new Error()
-      }
-    } catch {
-      setSubBtn('Subscribe')
-      setSubDisabled(false)
-      setSubMsg('Something went wrong. Try again.')
-    }
-  }
+async function getLatestNews(): Promise<NewsHeadline[]> {
+  if (!supabase) return []
+
+  const { data, error } = await supabase
+    .from('news')
+    .select('title, source, published_at, url')
+    .order('published_at', { ascending: false })
+    .limit(3)
+
+  if (error || !data) return []
+  return data as NewsHeadline[]
+}
+
+export default async function HomePage() {
+  const [tool, news] = await Promise.all([getToolOfWeek(), getLatestNews()])
 
   return (
     <>
@@ -60,38 +49,7 @@ export default function HomePage() {
       />
 
       {/* NAV */}
-      <nav className={navOpen ? 'nav-menu-open' : undefined}>
-        <a href="/" className="nav-logo">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/assets/logo.png" alt="bohemo." />
-          <span className="nav-wordmark">bohemo.</span>
-        </a>
-        <ul className={`nav-links${navOpen ? ' nav-open' : ''}`}>
-          <li><a href="#platform" onClick={() => setNavOpen(false)}>Platform</a></li>
-          <li>
-            <Link href="/tools" onClick={() => setNavOpen(false)}>Tools</Link>
-          </li>
-          <li>
-            <Link href="/news" onClick={() => setNavOpen(false)}>News</Link>
-          </li>
-          <li><a href="#newsletter" onClick={() => setNavOpen(false)}>Newsletter</a></li>
-          <li>
-            <a href="#newsletter" className="nav-cta" onClick={() => setNavOpen(false)}>
-              Join the waitlist
-            </a>
-          </li>
-        </ul>
-        <button
-          className="nav-hamburger"
-          onClick={() => setNavOpen((o) => !o)}
-          aria-label="Toggle menu"
-          aria-expanded={navOpen}
-        >
-          <span />
-          <span />
-          <span />
-        </button>
-      </nav>
+      <HomeNav />
 
       {/* HERO */}
       <div className="hero" id="home">
@@ -168,21 +126,66 @@ export default function HomePage() {
         <div className="platform-grid">
           <div className="platform-card">
             <div className="platform-card-icon">🗂</div>
-            <div className="platform-card-title">AI Tools Directory</div>
-            <p className="platform-card-body">
-              A curated, opinionated catalog of the best AI tools by category, use case, and price.
-              Not every tool — the right tools. The Michelin Guide of AI.
-            </p>
-            <span className="platform-card-tag live">Launching soon</span>
+            {tool ? (
+              <>
+                <span className="platform-card-tag live" style={{ marginTop: 0, marginBottom: '12px' }}>
+                  Tool of the week
+                </span>
+                <div className="platform-card-title">{tool.name}</div>
+                <p className="platform-card-body">{truncate(tool.description, 120)}</p>
+                <div style={{ display: 'flex', gap: '8px', marginTop: '16px', flexWrap: 'wrap' }}>
+                  <span className="tool-pill" style={{ cursor: 'default' }}>{tool.category}</span>
+                  {tool.price_label && (
+                    <span className="tool-pill" style={{ cursor: 'default' }}>{tool.price_label}</span>
+                  )}
+                </div>
+                <Link href="/tools" className="platform-card-tag" style={{ display: 'inline-block' }}>
+                  Explore tools →
+                </Link>
+              </>
+            ) : (
+              <>
+                <div className="platform-card-title">AI Tools Directory</div>
+                <p className="platform-card-body">
+                  A curated, opinionated catalog of the best AI tools by category, use case, and price.
+                  Not every tool — the right tools. The Michelin Guide of AI.
+                </p>
+                <span className="platform-card-tag live">Launching soon</span>
+              </>
+            )}
           </div>
           <div className="platform-card">
             <div className="platform-card-icon">📡</div>
-            <div className="platform-card-title">AI News Feed</div>
-            <p className="platform-card-body">
-              Curated AI news with an explicit India and Southeast Asia lens. The stories that
-              matter to builders where you are, not where the journalists are.
-            </p>
-            <span className="platform-card-tag live">Launching soon</span>
+            {news.length > 0 ? (
+              <>
+                <span className="platform-card-tag live" style={{ marginTop: 0, marginBottom: '12px' }}>
+                  Latest
+                </span>
+                <div className="platform-card-title">AI News Feed</div>
+                <div style={{ marginTop: '4px', marginBottom: '16px' }}>
+                  {news.map((item) => (
+                    <div key={item.url} className="platform-news-item">
+                      <div className="platform-news-title">{item.title}</div>
+                      <div className="platform-news-meta">
+                        {item.source} · {formatRelativeTime(item.published_at)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <Link href="/news" className="platform-card-tag" style={{ display: 'inline-block' }}>
+                  Read more →
+                </Link>
+              </>
+            ) : (
+              <>
+                <div className="platform-card-title">AI News Feed</div>
+                <p className="platform-card-body">
+                  Curated AI news with an explicit India and Southeast Asia lens. The stories that
+                  matter to builders where you are, not where the journalists are.
+                </p>
+                <span className="platform-card-tag live">Launching soon</span>
+              </>
+            )}
           </div>
           <div className="platform-card">
             <div className="platform-card-icon">⚡</div>
@@ -392,28 +395,7 @@ export default function HomePage() {
               in India and Southeast Asia. Authoritative. Direct. Unmissable.
             </p>
           </div>
-          <div className="newsletter-form">
-            <div className="newsletter-input-row">
-              <input
-                type="email"
-                className="newsletter-input"
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSubscribe()}
-              />
-              <button
-                className="btn-primary"
-                type="button"
-                onClick={handleSubscribe}
-                disabled={subDisabled}
-                style={{ whiteSpace: 'nowrap', flexShrink: 0 }}
-              >
-                {subBtn}
-              </button>
-            </div>
-            <p className="newsletter-fine">{subMsg}</p>
-          </div>
+          <NewsletterForm />
         </div>
       </div>
 
