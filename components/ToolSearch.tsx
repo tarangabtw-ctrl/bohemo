@@ -53,7 +53,7 @@ export default function ToolSearch({ onSearch }: Props) {
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search tools…"
         aria-label="Search tools"
-        className="w-full rounded-full border border-[rgba(13,13,13,0.15)] bg-transparent py-2 pl-9 pr-4 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-ink/20 transition-shadow"
+        className="w-full min-h-[44px] rounded-full border border-[rgba(13,13,13,0.15)] bg-transparent py-2 pl-9 pr-4 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-ink/20 transition-shadow"
       />
     </div>
   )

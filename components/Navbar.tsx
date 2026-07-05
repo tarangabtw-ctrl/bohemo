@@ -34,7 +34,7 @@ export default function Navbar() {
             <Link
               key={href}
               href={href}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              className={`inline-flex items-center min-h-[44px] rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                 pathname.startsWith(href)
                   ? 'bg-ink text-cream'
                   : 'text-secondary hover:bg-cream-dark'
@@ -45,7 +45,7 @@ export default function Navbar() {
           ))}
           <a
             href="/#newsletter"
-            className="ml-2 rounded-full bg-ink px-4 py-1.5 text-sm font-medium text-cream hover:bg-secondary transition-colors"
+            className="ml-2 inline-flex items-center min-h-[44px] rounded-full bg-ink px-4 py-1.5 text-sm font-medium text-cream hover:bg-secondary transition-colors"
           >
             Join waitlist
           </a>
@@ -53,7 +53,7 @@ export default function Navbar() {
 
         {/* Mobile hamburger */}
         <button
-          className="sm:hidden flex flex-col justify-center gap-1.5 p-1"
+          className="sm:hidden flex flex-col justify-center items-center gap-1.5 min-h-[44px] min-w-[44px] p-1"
           onClick={() => setOpen((o) => !o)}
           aria-label="Toggle menu"
         >
@@ -75,7 +75,7 @@ export default function Navbar() {
               key={href}
               href={href}
               onClick={() => setOpen(false)}
-              className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+              className={`flex items-center min-h-[44px] rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                 pathname.startsWith(href)
                   ? 'bg-ink text-cream'
                   : 'text-secondary hover:bg-cream-dark'
@@ -87,7 +87,7 @@ export default function Navbar() {
           <a
             href="/#newsletter"
             onClick={() => setOpen(false)}
-            className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-cream text-center mt-1"
+            className="flex items-center justify-center min-h-[44px] rounded-full bg-ink px-4 py-2 text-sm font-medium text-cream text-center mt-1"
           >
             Join waitlist
           </a>

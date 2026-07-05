@@ -890,3 +890,51 @@ nav.nav-menu-open .nav-hamburger span:nth-child(3) {
   color: var(--text-muted);
   margin-top: 2px;
 }
+
+/* ── MOBILE: min 14px text + 44px touch targets (375px baseline) ──── */
+@media (max-width: 640px) {
+  .nav-hamburger {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .nav-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .footer-links a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 14px;
+  }
+
+  .footer-copy {
+    font-size: 14px;
+  }
+
+  .platform-card-tag {
+    font-size: 14px;
+    padding: 12px 16px;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .tool-pill {
+    font-size: 14px;
+    padding: 12px 16px;
+    min-height: 44px;
+  }
+
+  .platform-news-meta {
+    font-size: 14px;
+  }
+
+  .newsletter-fine {
+    font-size: 14px;
+  }
+}

@@ -58,12 +58,12 @@ export default function ToolCard({ tool }: Props) {
             <h3 className="text-base font-semibold text-[#0D0D0D] leading-snug group-hover:underline decoration-1 underline-offset-2 truncate">
               {tool.name}
             </h3>
-            <p className="text-xs text-[#6B6560] mt-0.5">{tool.category}</p>
+            <p className="text-sm sm:text-xs text-[#6B6560] mt-0.5">{tool.category}</p>
           </div>
 
           {/* Verified badge */}
           {tool.verified && (
-            <span className="flex items-center gap-1 rounded-full bg-[#0D0D0D] px-2 py-0.5 text-[10px] font-semibold text-[#F0EDE6] shrink-0">
+            <span className="flex items-center gap-1 rounded-full bg-[#0D0D0D] px-2 py-0.5 text-sm sm:text-[10px] font-semibold text-[#F0EDE6] shrink-0">
               <svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden="true">
                 <path d="M2 5.5L4 7.5L8 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -79,10 +79,10 @@ export default function ToolCard({ tool }: Props) {
 
         {/* ── Footer: pricing badge + visit link ──────── */}
         <div className="mt-4 pt-3 border-t border-black/[0.06] flex items-center justify-between gap-2">
-          <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${priceStyle}`}>
+          <span className={`text-sm sm:text-xs font-medium px-2.5 py-0.5 rounded-full ${priceStyle}`}>
             {priceLabel}
           </span>
-          <span className="text-xs font-medium text-[#6B6560] group-hover:text-[#0D0D0D] transition-colors shrink-0">
+          <span className="text-sm sm:text-xs font-medium text-[#6B6560] group-hover:text-[#0D0D0D] transition-colors shrink-0">
             Visit →
           </span>
         </div>

@@ -58,7 +58,7 @@ export default async function ToolsPage({ searchParams }: Props) {
           <h1 className="text-4xl font-bold tracking-tight text-[#0D0D0D]">
             AI Tools Directory
           </h1>
-          <span className="text-xs px-3 py-1 rounded-full border border-black/10 text-[#6B6560] font-medium">
+          <span className="text-sm sm:text-xs px-3 py-1 rounded-full border border-black/10 text-[#6B6560] font-medium">
             {tools.length} tools
           </span>
         </div>
@@ -68,7 +68,7 @@ export default async function ToolsPage({ searchParams }: Props) {
         {(category || price) && (
           <a
             href="/tools"
-            className="mt-2 inline-block text-xs font-medium text-[#6B6560] underline underline-offset-2 hover:text-[#0D0D0D] transition-colors"
+            className="mt-2 inline-flex items-center min-h-[44px] text-sm sm:text-xs font-medium text-[#6B6560] underline underline-offset-2 hover:text-[#0D0D0D] transition-colors"
           >
             Clear filters
           </a>
@@ -91,7 +91,7 @@ export default async function ToolsPage({ searchParams }: Props) {
       {tools.length === 0 ? (
         <div className="py-20 text-center">
           <p className="text-muted">No tools found for those filters.</p>
-          <a href="/tools" className="mt-3 inline-block text-sm font-medium underline underline-offset-2">
+          <a href="/tools" className="mt-3 inline-flex items-center min-h-[44px] text-sm font-medium underline underline-offset-2">
             Reset filters
           </a>
         </div>

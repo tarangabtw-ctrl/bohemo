@@ -27,7 +27,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
             <a href="/tools" className="hover:text-ink transition-colors">Tools</a>
             <a href="/news" className="hover:text-ink transition-colors">News</a>
           </div>
-          <p className="text-xs text-muted">© 2025 bohemo. All rights reserved.</p>
+          <p className="text-sm sm:text-xs text-muted">© 2025 bohemo. All rights reserved.</p>
         </div>
       </footer>
     </>

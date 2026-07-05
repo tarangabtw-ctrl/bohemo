@@ -86,13 +86,13 @@ export default async function NewsPage({ searchParams }: Props) {
       {/* ── Region filter ───────────────────────────────── */}
       <div className="mb-8 pb-6 border-b border-black/[0.08]">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-[#6B6560] uppercase tracking-wide w-16 shrink-0">
+          <span className="text-sm sm:text-xs font-medium text-[#6B6560] uppercase tracking-wide w-16 shrink-0">
             Region
           </span>
           <div className="flex items-center gap-2 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <a
               href="/news"
-              className={`pill border text-xs transition-colors whitespace-nowrap ${
+              className={`pill border text-sm sm:text-xs transition-colors whitespace-nowrap min-h-[44px] ${
                 !region
                   ? 'bg-[#0D0D0D] text-[#F0EDE6] border-[#0D0D0D]'
                   : 'bg-transparent text-[#0D0D0D] border-black/20 hover:border-black/60'
@@ -104,7 +104,7 @@ export default async function NewsPage({ searchParams }: Props) {
               <a
                 key={r}
                 href={`/news?region=${encodeURIComponent(r)}`}
-                className={`pill border text-xs transition-colors whitespace-nowrap ${
+                className={`pill border text-sm sm:text-xs transition-colors whitespace-nowrap min-h-[44px] ${
                   region === r
                     ? 'bg-[#0D0D0D] text-[#F0EDE6] border-[#0D0D0D]'
                     : 'bg-transparent text-[#0D0D0D] border-black/20 hover:border-black/60'
@@ -121,7 +121,7 @@ export default async function NewsPage({ searchParams }: Props) {
       {articles.length === 0 && (
         <div className="py-20 text-center">
           <p className="text-[#6B6560]">No articles found.</p>
-          <a href="/news" className="mt-3 inline-block text-sm font-medium underline underline-offset-2">
+          <a href="/news" className="mt-3 inline-flex items-center min-h-[44px] text-sm font-medium underline underline-offset-2">
             Reset filters
           </a>
         </div>
@@ -137,7 +137,7 @@ export default async function NewsPage({ searchParams }: Props) {
         >
           <article className="bg-white rounded-2xl p-8 border border-black/[0.08] hover:border-black/20 hover:shadow-md transition-all duration-200">
             {/* Source + date */}
-            <div className="flex items-center gap-2 text-xs text-[#6B6560]">
+            <div className="flex items-center gap-2 text-sm sm:text-xs text-[#6B6560]">
               <span>{featured.source}</span>
               <span>·</span>
               <span>{formatDate(featured.published_at)}</span>
@@ -155,10 +155,10 @@ export default async function NewsPage({ searchParams }: Props) {
 
             {/* Footer row */}
             <div className="flex items-center justify-between mt-6">
-              <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${regionBadge(featured.region)}`}>
+              <span className={`text-sm sm:text-xs font-medium px-2.5 py-0.5 rounded-full ${regionBadge(featured.region)}`}>
                 {featured.region}
               </span>
-              <span className="text-xs font-medium text-[#6B6560] group-hover:text-[#0D0D0D] transition-colors">
+              <span className="text-sm sm:text-xs font-medium text-[#6B6560] group-hover:text-[#0D0D0D] transition-colors">
                 Read article →
               </span>
             </div>
@@ -180,12 +180,12 @@ export default async function NewsPage({ searchParams }: Props) {
               {/* Top row: region badge + source (left) | date (right) */}
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full shrink-0 ${regionBadge(article.region)}`}>
+                  <span className={`text-sm sm:text-xs font-medium px-2.5 py-0.5 rounded-full shrink-0 ${regionBadge(article.region)}`}>
                     {article.region}
                   </span>
-                  <span className="text-xs text-[#6B6560] truncate">{article.source}</span>
+                  <span className="text-sm sm:text-xs text-[#6B6560] truncate">{article.source}</span>
                 </div>
-                <span className="text-xs text-[#6B6560] shrink-0">{formatDate(article.published_at)}</span>
+                <span className="text-sm sm:text-xs text-[#6B6560] shrink-0">{formatDate(article.published_at)}</span>
               </div>
 
               {/* Title */}

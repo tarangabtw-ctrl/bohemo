@@ -37,7 +37,7 @@ export default function ToolPageClient({ tool, similarTools }: Props) {
       {/* Back link */}
       <Link
         href="/tools"
-        className="inline-flex items-center gap-1 text-sm text-muted hover:text-ink transition-colors mb-8"
+        className="inline-flex items-center gap-1 min-h-[44px] text-sm text-muted hover:text-ink transition-colors mb-8"
       >
         ← Back to Tools
       </Link>
@@ -50,7 +50,7 @@ export default function ToolPageClient({ tool, similarTools }: Props) {
             {tool.price_label ?? PRICE_LABELS[tool.price_type]}
           </span>
           {tool.verified && (
-            <span className="flex items-center gap-1 rounded-full bg-ink px-3 py-1 text-xs font-semibold text-cream">
+            <span className="flex items-center gap-1 rounded-full bg-ink px-3 py-1 text-sm sm:text-xs font-semibold text-cream">
               <svg width="9" height="9" viewBox="0 0 10 10" fill="none">
                 <path d="M2 5.5L4 7.5L8 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -72,7 +72,7 @@ export default function ToolPageClient({ tool, similarTools }: Props) {
           href={tool.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="self-start rounded-full bg-ink px-6 py-3 text-sm font-semibold text-cream hover:bg-secondary transition-colors"
+          className="self-start inline-flex items-center justify-center min-h-[44px] rounded-full bg-ink px-6 py-3 text-sm font-semibold text-cream hover:bg-secondary transition-colors"
           onClick={() => {
             window.posthog?.capture('tool_clicked', {
               tool_name: tool.name,
@@ -93,7 +93,7 @@ export default function ToolPageClient({ tool, similarTools }: Props) {
         <div className="grid sm:grid-cols-2 gap-6">
           {(tool.tags?.length ?? 0) > 0 && (
             <div>
-              <h2 className="text-xs font-semibold text-muted uppercase tracking-wide mb-3">Tags</h2>
+              <h2 className="text-sm sm:text-xs font-semibold text-muted uppercase tracking-wide mb-3">Tags</h2>
               <div className="flex flex-wrap gap-1.5">
                 {tool.tags.map((tag) => (
                   <span key={tag} className="pill-filled">{tag}</span>
@@ -104,7 +104,7 @@ export default function ToolPageClient({ tool, similarTools }: Props) {
 
           {(tool.region_relevance?.length ?? 0) > 0 && (
             <div>
-              <h2 className="text-xs font-semibold text-muted uppercase tracking-wide mb-3">
+              <h2 className="text-sm sm:text-xs font-semibold text-muted uppercase tracking-wide mb-3">
                 Relevant in:
               </h2>
               <div className="flex flex-wrap gap-1.5">
@@ -122,7 +122,7 @@ export default function ToolPageClient({ tool, similarTools }: Props) {
 
       <Link
         href="/tools"
-        className="text-sm text-muted underline underline-offset-2 hover:text-ink transition-colors"
+        className="inline-flex items-center min-h-[44px] text-sm text-muted underline underline-offset-2 hover:text-ink transition-colors"
       >
         Browse more tools
       </Link>
@@ -130,7 +130,7 @@ export default function ToolPageClient({ tool, similarTools }: Props) {
       {/* Similar tools */}
       {similarTools.length > 0 && (
         <div className="mt-12">
-          <h2 className="text-xs font-semibold text-muted uppercase tracking-wide mb-4">
+          <h2 className="text-sm sm:text-xs font-semibold text-muted uppercase tracking-wide mb-4">
             Similar tools
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

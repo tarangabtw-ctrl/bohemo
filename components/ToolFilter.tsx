@@ -37,14 +37,14 @@ export default function ToolFilter() {
   // Active / inactive pill classes per spec
   const active   = 'bg-[#0D0D0D] text-[#F0EDE6] border-[#0D0D0D]'
   const inactive = 'bg-transparent text-[#0D0D0D] border-black/20 hover:border-black/60'
-  const pill     = 'pill border text-xs transition-colors whitespace-nowrap'
+  const pill     = 'pill border text-sm sm:text-xs transition-colors whitespace-nowrap min-h-[44px]'
 
   return (
     <div className="flex flex-col gap-3">
 
       {/* ── Category row ───────────────────────────────── */}
       <div className="flex items-center gap-2">
-        <span className="text-xs font-medium text-muted uppercase tracking-wide w-16 shrink-0">
+        <span className="text-sm sm:text-xs font-medium text-muted uppercase tracking-wide w-16 shrink-0">
           Category
         </span>
         {/* Horizontally scrollable on mobile */}
@@ -66,7 +66,7 @@ export default function ToolFilter() {
 
       {/* ── Price row ──────────────────────────────────── */}
       <div className="flex items-center gap-2">
-        <span className="text-xs font-medium text-muted uppercase tracking-wide w-16 shrink-0">
+        <span className="text-sm sm:text-xs font-medium text-muted uppercase tracking-wide w-16 shrink-0">
           Price
         </span>
         <div className="flex items-center gap-2 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">

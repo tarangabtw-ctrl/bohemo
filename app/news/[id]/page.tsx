@@ -110,10 +110,10 @@ export default async function NewsArticlePage({ params }: Props) {
 
       {/* Source + region pills */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
-        <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${regionBadge(article.region)}`}>
+        <span className={`text-sm sm:text-xs font-medium px-2.5 py-0.5 rounded-full ${regionBadge(article.region)}`}>
           {article.region}
         </span>
-        <span className="pill-filled text-xs">{article.source}</span>
+        <span className="pill-filled text-sm sm:text-xs">{article.source}</span>
       </div>
 
       {/* Headline */}
@@ -140,7 +140,7 @@ export default async function NewsArticlePage({ params }: Props) {
       {/* More from this region */}
       {related.length > 0 && (
         <div>
-          <h2 className="text-xs font-semibold text-muted uppercase tracking-wide mb-4">
+          <h2 className="text-sm sm:text-xs font-semibold text-muted uppercase tracking-wide mb-4">
             More from {article.region}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -148,10 +148,10 @@ export default async function NewsArticlePage({ params }: Props) {
               <Link key={item.id} href={`/news/${item.id}`} className="group block h-full">
                 <article className="card-hover h-full flex flex-col gap-3">
                   <div className="flex items-center justify-between gap-2 flex-wrap">
-                    <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${regionBadge(item.region)}`}>
+                    <span className={`text-sm sm:text-xs font-medium px-2.5 py-0.5 rounded-full ${regionBadge(item.region)}`}>
                       {item.region}
                     </span>
-                    <span className="text-xs text-muted shrink-0">{item.source}</span>
+                    <span className="text-sm sm:text-xs text-muted shrink-0">{item.source}</span>
                   </div>
                   <h3 className="font-semibold text-base text-ink leading-snug group-hover:underline decoration-1 underline-offset-2">
                     {item.title}
