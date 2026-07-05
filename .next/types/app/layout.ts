@@ -1,4 +1,4 @@
-// File: /Users/taranga/Desktop/bohemo/app/layout.tsx
+// File: /Users/taranga/Documents/bohemo/app/layout.tsx
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
