@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import ToolCard from '@/components/ToolCard'
+import ToolsGrid from '@/components/ToolsGrid'
 import ToolFilter from '@/components/ToolFilter'
 import ToolSearch from '@/components/ToolSearch'
 import { supabase } from '@/lib/supabase'
@@ -96,11 +96,7 @@ export default async function ToolsPage({ searchParams }: Props) {
           </a>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {tools.map((tool) => (
-            <ToolCard key={tool.id} tool={tool} />
-          ))}
-        </div>
+        <ToolsGrid tools={tools} />
       )}
     </div>
   )

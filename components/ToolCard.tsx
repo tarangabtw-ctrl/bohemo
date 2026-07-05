@@ -23,29 +23,48 @@ const PRICE_LABEL: Record<string, string> = {
 
 interface Props {
   tool: Tool
+  selectable?: boolean
+  selected?: boolean
+  selectionDisabled?: boolean
+  onToggleSelect?: (slug: string) => void
 }
 
-export default function ToolCard({ tool }: Props) {
+export default function ToolCard({ tool, selectable, selected, selectionDisabled, onToggleSelect }: Props) {
   const priceStyle = PRICE_BADGE[tool.price_type] ?? 'bg-[#E3DFD7] text-[#3D3A35] border border-black/10'
   const priceLabel = tool.price_label ?? PRICE_LABEL[tool.price_type] ?? tool.price_type
 
   return (
-    <Link
-      href={`/tools/${tool.slug}`}
-      className="group block h-full"
-      onClick={() => {
-        window.posthog?.capture('tool_clicked', {
-          tool_name: tool.name,
-          tool_url:  tool.url,
-          source:    'card',
-        })
-        window.posthog?.capture('tool_card_click', {
-          tool_name: tool.name,
-          category:  tool.category,
-        })
-      }}
-    >
-      <article className="bg-white rounded-2xl p-5 border border-black/[0.08] hover:border-black/20 hover:shadow-md transition-all duration-200 h-full flex flex-col">
+    <div className="relative h-full">
+      {selectable && (
+        <label
+          className="absolute top-1 right-1 z-10 flex items-center justify-center w-11 h-11"
+          aria-label={`Select ${tool.name} to compare`}
+        >
+          <input
+            type="checkbox"
+            checked={!!selected}
+            disabled={!selected && selectionDisabled}
+            onChange={() => onToggleSelect?.(tool.slug)}
+            className="w-5 h-5 accent-[#0D0D0D] disabled:opacity-40"
+          />
+        </label>
+      )}
+      <Link
+        href={`/tools/${tool.slug}`}
+        className="group block h-full"
+        onClick={() => {
+          window.posthog?.capture('tool_clicked', {
+            tool_name: tool.name,
+            tool_url:  tool.url,
+            source:    'card',
+          })
+          window.posthog?.capture('tool_card_click', {
+            tool_name: tool.name,
+            category:  tool.category,
+          })
+        }}
+      >
+        <article className="bg-white rounded-2xl p-5 border border-black/[0.08] hover:border-black/20 hover:shadow-md transition-all duration-200 h-full flex flex-col">
 
         {/* ── Header: logo mark + name + category ─────── */}
         <div className="flex items-start gap-3">
@@ -91,7 +110,8 @@ export default function ToolCard({ tool }: Props) {
           </span>
         </div>
 
-      </article>
-    </Link>
+        </article>
+      </Link>
+    </div>
   )
 }
