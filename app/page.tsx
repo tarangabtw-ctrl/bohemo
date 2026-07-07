@@ -327,37 +327,37 @@ export default async function HomePage() {
         </div>
 
         <div className="tools-row">
-          <a href="#" className="tool-pill">
+          <Link href="/tools?category=Writing" className="tool-pill">
             <span className="tool-pill-dot" style={{ background: '#0D0D0D' }} />
             Writing &amp; Content
-          </a>
-          <a href="#" className="tool-pill">
+          </Link>
+          <Link href="/tools?category=Code" className="tool-pill">
             <span className="tool-pill-dot" style={{ background: '#0D0D0D' }} />
             Code &amp; Dev
-          </a>
-          <a href="#" className="tool-pill">
+          </Link>
+          <Link href="/tools?category=Design" className="tool-pill">
             <span className="tool-pill-dot" style={{ background: '#0D0D0D' }} />
             Design &amp; Image
-          </a>
-          <a href="#" className="tool-pill">
+          </Link>
+          <Link href="/tools?category=Video" className="tool-pill">
             <span className="tool-pill-dot" style={{ background: '#0D0D0D' }} />
             Video &amp; Audio
-          </a>
-          <a href="#" className="tool-pill">
+          </Link>
+          <Link href="/tools?category=Research" className="tool-pill">
             <span className="tool-pill-dot" style={{ background: '#0D0D0D' }} />
             Research
-          </a>
-          <a href="#" className="tool-pill">
+          </Link>
+          <Link href="/tools?category=Productivity" className="tool-pill">
             <span className="tool-pill-dot" style={{ background: '#0D0D0D' }} />
             Productivity
-          </a>
-          <a href="#" className="tool-pill">
+          </Link>
+          <Link href="/tools?category=Marketing" className="tool-pill">
             <span className="tool-pill-dot" style={{ background: '#0D0D0D' }} />
             Marketing
-          </a>
-          <a href="#" className="tool-pill" style={{ opacity: 0.5, cursor: 'default' }}>
+          </Link>
+          <span className="tool-pill" style={{ opacity: 0.5, cursor: 'default' }}>
             + More coming
-          </a>
+          </span>
         </div>
       </section>
 
@@ -462,7 +462,7 @@ export default async function HomePage() {
           <li><Link href="/tools">Tools</Link></li>
           <li><Link href="/news">News</Link></li>
           <li><a href="#">Agents</a></li>
-          <li><a href="#">Newsletter</a></li>
+          <li><a href="#newsletter">Newsletter</a></li>
           <li><a href="#">Discord</a></li>
         </ul>
         <span className="footer-copy">© 2025 bohemo. All rights reserved.</span>
