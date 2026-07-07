@@ -4,7 +4,7 @@ import ToolFilter from '@/components/ToolFilter'
 import ToolSearch from '@/components/ToolSearch'
 import { supabase } from '@/lib/supabase'
 import { SEED_TOOLS } from '@/lib/data'
-import { SITE_URL } from '@/lib/site'
+import { SITE_URL, OG_IMAGE } from '@/lib/site'
 import type { Tool } from '@/types'
 import type { Metadata } from 'next'
 
@@ -14,12 +14,20 @@ const TOOLS_DESCRIPTION = 'The best AI tools for India and Southeast Asia, curat
 export const metadata: Metadata = {
   title: TOOLS_TITLE,
   description: TOOLS_DESCRIPTION,
+  alternates: { canonical: '/tools' },
   openGraph: {
     title: TOOLS_TITLE,
     description: TOOLS_DESCRIPTION,
     url: `${SITE_URL}/tools`,
     siteName: 'bohemo.',
     type: 'website',
+    images: [OG_IMAGE],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: TOOLS_TITLE,
+    description: TOOLS_DESCRIPTION,
+    images: [OG_IMAGE],
   },
 }
 

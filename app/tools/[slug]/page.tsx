@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { SEED_TOOLS } from '@/lib/data'
-import { SITE_URL } from '@/lib/site'
+import { SITE_URL, OG_IMAGE } from '@/lib/site'
 import type { Tool } from '@/types'
 import { PRICE_TYPES } from '@/types'
 import type { Metadata } from 'next'
@@ -57,12 +57,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description: tool.description ?? undefined,
+    alternates: { canonical: `/tools/${tool.slug}` },
     openGraph: {
       title,
       description: tool.description ?? undefined,
       url: `${SITE_URL}/tools/${tool.slug}`,
       siteName: 'bohemo.',
       type: 'website',
+      images: [OG_IMAGE],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description: tool.description ?? undefined,
+      images: [OG_IMAGE],
     },
   }
 }

@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { SEED_NEWS } from '@/lib/data'
-import { SITE_URL } from '@/lib/site'
+import { SITE_URL, OG_IMAGE } from '@/lib/site'
 import NewsRegionFilter from '@/components/NewsRegionFilter'
 import NewsCardLink from '@/components/NewsCardLink'
 import type { NewsArticle } from '@/types'
@@ -12,12 +12,20 @@ const NEWS_DESCRIPTION = "What's happening in AI across India and Southeast Asia
 export const metadata: Metadata = {
   title: NEWS_TITLE,
   description: NEWS_DESCRIPTION,
+  alternates: { canonical: '/news' },
   openGraph: {
     title: NEWS_TITLE,
     description: NEWS_DESCRIPTION,
     url: `${SITE_URL}/news`,
     siteName: 'bohemo.',
     type: 'website',
+    images: [OG_IMAGE],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: NEWS_TITLE,
+    description: NEWS_DESCRIPTION,
+    images: [OG_IMAGE],
   },
 }
 

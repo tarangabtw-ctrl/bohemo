@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { SEED_NEWS } from '@/lib/data'
-import { SITE_URL } from '@/lib/site'
+import { SITE_URL, OG_IMAGE } from '@/lib/site'
 import type { NewsArticle } from '@/types'
 import type { Metadata } from 'next'
 
@@ -74,12 +74,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description: article.excerpt ?? undefined,
+    alternates: { canonical: `/news/${article.id}` },
     openGraph: {
       title,
       description: article.excerpt ?? undefined,
       url: `${SITE_URL}/news/${article.id}`,
       siteName: 'bohemo.',
       type: 'article',
+      images: [OG_IMAGE],
+      ...(article.published_at ? { publishedTime: article.published_at } : {}),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description: article.excerpt ?? undefined,
+      images: [OG_IMAGE],
     },
   }
 }

@@ -4,7 +4,7 @@ import { NewsletterForm } from '@/components/NewsletterForm'
 import WaitlistButton from '@/components/WaitlistButton'
 import { supabase } from '@/lib/supabase'
 import { truncate, formatRelativeTime } from '@/lib/utils'
-import { SITE_URL } from '@/lib/site'
+import { SITE_URL, OG_IMAGE } from '@/lib/site'
 import type { Tool, NewsArticle } from '@/types'
 import type { Metadata } from 'next'
 
@@ -15,12 +15,20 @@ const HOME_DESCRIPTION =
 export const metadata: Metadata = {
   title: HOME_TITLE,
   description: HOME_DESCRIPTION,
+  alternates: { canonical: '/' },
   openGraph: {
     title: HOME_TITLE,
     description: HOME_DESCRIPTION,
     url: SITE_URL,
     siteName: 'bohemo.',
     type: 'website',
+    images: [OG_IMAGE],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    images: [OG_IMAGE],
   },
 }
 
@@ -29,6 +37,15 @@ const websiteSchema = {
   '@type': 'WebSite',
   name: 'bohemo.',
   url: SITE_URL,
+  description: HOME_DESCRIPTION,
+}
+
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'bohemo.',
+  url: SITE_URL,
+  logo: `${SITE_URL}/assets/logo.png`,
   description: HOME_DESCRIPTION,
 }
 
@@ -77,6 +94,10 @@ export default async function HomePage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
       />
 
       {/* NAV */}
