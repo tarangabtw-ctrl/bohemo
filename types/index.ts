@@ -13,6 +13,12 @@ export interface Tool {
   created_at: string
 }
 
+export interface Subscriber {
+  id: string
+  email: string
+  created_at: string
+}
+
 export interface NewsArticle {
   id: string
   title: string

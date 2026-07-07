@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import type { Subscriber } from '@/types'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -39,7 +40,8 @@ export async function POST(request: Request) {
       : NextResponse.json({ status: 'success' })
   }
 
-  const { error } = await supabase.from('subscribers').insert({ email })
+  const row: Pick<Subscriber, 'email'> = { email }
+  const { error } = await supabase.from('subscribers').insert(row)
 
   if (error) {
     if (error.code === '23505') {

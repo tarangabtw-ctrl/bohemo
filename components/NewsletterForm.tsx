@@ -33,7 +33,7 @@ export function NewsletterForm({ className }: Props = {}) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       })
-      const data = await res.json().catch(() => ({}))
+      const data: { status?: string; error?: string } = await res.json().catch(() => ({}))
 
       const resolvedStatus: Status =
         res.ok && data.status === 'duplicate' ? 'duplicate' : res.ok && data.status === 'success' ? 'success' : 'error'
