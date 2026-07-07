@@ -37,27 +37,36 @@ type NewsHeadline = Pick<NewsArticle, 'title' | 'source' | 'published_at' | 'url
 async function getToolOfWeek(): Promise<Tool | null> {
   if (!supabase) return null
 
-  const { data, error } = await supabase
-    .from('tools')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(1)
+  try {
+    const { data, error } = await supabase
+      .from('tools')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(1)
 
-  if (error || !data || data.length === 0) return null
-  return data[0] as Tool
+    if (error || !data || data.length === 0) return null
+    return data[0] as Tool
+  } catch {
+    // Fetch failure — the card renders its static fallback instead
+    return null
+  }
 }
 
 async function getLatestNews(): Promise<NewsHeadline[]> {
   if (!supabase) return []
 
-  const { data, error } = await supabase
-    .from('news')
-    .select('title, source, published_at, url')
-    .order('published_at', { ascending: false })
-    .limit(3)
+  try {
+    const { data, error } = await supabase
+      .from('news')
+      .select('title, source, published_at, url')
+      .order('published_at', { ascending: false })
+      .limit(3)
 
-  if (error || !data) return []
-  return data as NewsHeadline[]
+    if (error || !data) return []
+    return data as NewsHeadline[]
+  } catch {
+    return []
+  }
 }
 
 export default async function HomePage() {

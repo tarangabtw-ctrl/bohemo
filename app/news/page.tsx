@@ -51,14 +51,18 @@ interface Props {
 
 async function getNews(region?: string): Promise<NewsArticle[]> {
   if (supabase) {
-    let query = supabase
-      .from('news')
-      .select('*')
-      .order('published_at', { ascending: false })
-    if (region) query = query.eq('region', region)
+    try {
+      let query = supabase
+        .from('news')
+        .select('*')
+        .order('published_at', { ascending: false })
+      if (region) query = query.eq('region', region)
 
-    const { data, error } = await query
-    if (!error && data) return data as NewsArticle[]
+      const { data, error } = await query
+      if (!error && data) return data as NewsArticle[]
+    } catch {
+      // fall through to seed data
+    }
   }
 
   let news = [...SEED_NEWS].sort(

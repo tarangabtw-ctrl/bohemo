@@ -28,14 +28,18 @@ interface Props {
 }
 
 async function getTools(category?: string, price?: string): Promise<Tool[]> {
-  // Try Supabase first; fall back to local seed data when not configured
+  // Try Supabase first; fall back to local seed data when not configured or failing
   if (supabase) {
-    let query = supabase.from('tools').select('*').order('created_at', { ascending: false })
-    if (category) query = query.eq('category', category)
-    if (price)    query = query.eq('price_type', price)
+    try {
+      let query = supabase.from('tools').select('*').order('created_at', { ascending: false })
+      if (category) query = query.eq('category', category)
+      if (price)    query = query.eq('price_type', price)
 
-    const { data, error } = await query
-    if (!error && data) return data as Tool[]
+      const { data, error } = await query
+      if (!error && data) return data as Tool[]
+    } catch {
+      // fall through to seed data
+    }
   }
 
   // Seed data fallback with same filters

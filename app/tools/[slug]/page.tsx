@@ -13,25 +13,33 @@ interface Props {
 
 async function getTool(slug: string): Promise<Tool | null> {
   if (supabase) {
-    const { data, error } = await supabase
-      .from('tools')
-      .select('*')
-      .eq('slug', slug)
-      .single()
-    if (!error && data) return data as Tool
+    try {
+      const { data, error } = await supabase
+        .from('tools')
+        .select('*')
+        .eq('slug', slug)
+        .single()
+      if (!error && data) return data as Tool
+    } catch {
+      // fall through to seed data
+    }
   }
   return SEED_TOOLS.find((t) => t.slug === slug) ?? null
 }
 
 async function getSimilarTools(category: string, slug: string): Promise<Tool[]> {
   if (supabase) {
-    const { data, error } = await supabase
-      .from('tools')
-      .select('*')
-      .eq('category', category)
-      .neq('slug', slug)
-      .limit(3)
-    if (!error && data) return data as Tool[]
+    try {
+      const { data, error } = await supabase
+        .from('tools')
+        .select('*')
+        .eq('category', category)
+        .neq('slug', slug)
+        .limit(3)
+      if (!error && data) return data as Tool[]
+    } catch {
+      // fall through to seed data
+    }
   }
   return SEED_TOOLS.filter((t) => t.category === category && t.slug !== slug).slice(0, 3)
 }

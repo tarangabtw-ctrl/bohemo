@@ -13,8 +13,12 @@ async function getToolsBySlug(slugs: string[]): Promise<Tool[]> {
   if (slugs.length === 0) return []
 
   if (supabase) {
-    const { data, error } = await supabase.from('tools').select('*').in('slug', slugs)
-    if (!error && data) return data as Tool[]
+    try {
+      const { data, error } = await supabase.from('tools').select('*').in('slug', slugs)
+      if (!error && data) return data as Tool[]
+    } catch {
+      // fall through to seed data
+    }
   }
 
   return SEED_TOOLS.filter((t) => slugs.includes(t.slug))

@@ -34,21 +34,29 @@ function formatDate(iso: string | null | undefined) {
 
 async function getArticle(id: string): Promise<NewsArticle | null> {
   if (supabase) {
-    const { data, error } = await supabase.from('news').select('*').eq('id', id).single()
-    if (!error && data) return data as NewsArticle
+    try {
+      const { data, error } = await supabase.from('news').select('*').eq('id', id).single()
+      if (!error && data) return data as NewsArticle
+    } catch {
+      // fall through to seed data
+    }
   }
   return SEED_NEWS.find((n) => n.id === id) ?? null
 }
 
 async function getRelatedArticles(region: string, id: string): Promise<NewsArticle[]> {
   if (supabase) {
-    const { data, error } = await supabase
-      .from('news')
-      .select('*')
-      .eq('region', region)
-      .neq('id', id)
-      .limit(3)
-    if (!error && data) return data as NewsArticle[]
+    try {
+      const { data, error } = await supabase
+        .from('news')
+        .select('*')
+        .eq('region', region)
+        .neq('id', id)
+        .limit(3)
+      if (!error && data) return data as NewsArticle[]
+    } catch {
+      // fall through to seed data
+    }
   }
   return SEED_NEWS.filter((n) => n.region === region && n.id !== id).slice(0, 3)
 }

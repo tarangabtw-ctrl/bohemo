@@ -20,12 +20,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   if (supabase) {
-    const [{ data: toolRows, error: toolError }, { data: newsRows, error: newsError }] = await Promise.all([
-      supabase.from('tools').select('slug, created_at'),
-      supabase.from('news').select('id, published_at'),
-    ])
-    tools = !toolError && toolRows ? toolRows : []
-    news = !newsError && newsRows ? newsRows : []
+    try {
+      const [{ data: toolRows, error: toolError }, { data: newsRows, error: newsError }] = await Promise.all([
+        supabase.from('tools').select('slug, created_at'),
+        supabase.from('news').select('id, published_at'),
+      ])
+      tools = !toolError && toolRows ? toolRows : []
+      news = !newsError && newsRows ? newsRows : []
+    } catch {
+      // keep seed-derived routes so the sitemap matches what the pages render
+    }
   }
 
   const toolRoutes: MetadataRoute.Sitemap = tools.map((t) => ({
