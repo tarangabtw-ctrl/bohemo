@@ -100,6 +100,7 @@ export default async function ToolsPage({ searchParams }: Props) {
       </div>
 
       {/* ── Tool grid ─────────────────────────────────── */}
+      <h2 className="sr-only">All tools</h2>
       {tools.length === 0 ? (
         <div className="py-20 text-center">
           <p className="text-muted">No tools found for those filters.</p>

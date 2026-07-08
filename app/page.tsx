@@ -126,7 +126,7 @@ export default async function HomePage() {
           <div className="hero-actions">
             <WaitlistButton location="hero" className="btn-primary">
               Join the waitlist
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                 <path
                   d="M3 7h8M8 4l3 3-3 3"
                   stroke="currentColor"

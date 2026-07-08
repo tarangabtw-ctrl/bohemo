@@ -60,6 +60,7 @@ export default function Navbar() {
           className="sm:hidden flex flex-col justify-center items-center gap-1.5 min-h-[44px] min-w-[44px] p-1"
           onClick={() => setOpen((o) => !o)}
           aria-label="Toggle menu"
+          aria-expanded={open}
         >
           <span
             className={`block h-0.5 w-5 bg-ink transition-transform ${open ? 'translate-y-2 rotate-45' : ''}`}

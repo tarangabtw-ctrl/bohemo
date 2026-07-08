@@ -72,6 +72,9 @@ export default async function ComparePage({ searchParams }: Props) {
   if (orderedTools.length < 2) {
     return (
       <div className="mx-auto max-w-3xl px-6 py-24 text-center">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-ink mb-3">
+          Compare tools
+        </h1>
         <p className="text-base text-muted">Pick 2 or 3 tools from the directory to compare.</p>
         <Link
           href="/tools"
@@ -181,7 +184,7 @@ export default async function ComparePage({ searchParams }: Props) {
                 <td key={tool.slug} className="align-top px-4 py-3">
                   {tool.verified ? (
                     <span className="flex items-center gap-1 rounded-full bg-ink px-3 py-1 text-sm sm:text-xs font-semibold text-cream w-fit">
-                      <svg width="9" height="9" viewBox="0 0 10 10" fill="none">
+                      <svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden="true">
                         <path d="M2 5.5L4 7.5L8 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                       Verified

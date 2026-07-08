@@ -51,7 +51,7 @@ export default function ToolPageClient({ tool, similarTools }: Props) {
           </span>
           {tool.verified && (
             <span className="flex items-center gap-1 rounded-full bg-ink px-3 py-1 text-sm sm:text-xs font-semibold text-cream">
-              <svg width="9" height="9" viewBox="0 0 10 10" fill="none">
+              <svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden="true">
                 <path d="M2 5.5L4 7.5L8 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               Bohemo Verified

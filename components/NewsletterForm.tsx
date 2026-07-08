@@ -59,7 +59,11 @@ export function NewsletterForm({ className }: Props = {}) {
   return (
     <div className={wrapperClass}>
       <div className="newsletter-input-row">
+        <label htmlFor="newsletter-email" className="sr-only">
+          Email address
+        </label>
         <input
+          id="newsletter-email"
           type="email"
           className="newsletter-input"
           placeholder="your@email.com"
