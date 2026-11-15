@@ -1,55 +1,13 @@
-import { supabase } from '@/lib/supabase'
-import { SEED_NEWS } from '@/lib/data'
-import { SITE_URL, OG_IMAGE } from '@/lib/site'
-import NewsRegionFilter from '@/components/NewsRegionFilter'
-import NewsCardLink from '@/components/NewsCardLink'
-import type { NewsArticle } from '@/types'
-import type { Metadata } from 'next'
+import Link from 'next/link'
+import { getNews } from '@/lib/queries'
+import { buildMetadata } from '@/lib/seo'
 
-const NEWS_TITLE = 'AI News — bohemo.'
-const NEWS_DESCRIPTION = "What's happening in AI across India and Southeast Asia."
-
-export const metadata: Metadata = {
-  title: NEWS_TITLE,
-  description: NEWS_DESCRIPTION,
-  alternates: { canonical: '/news' },
-  openGraph: {
-    title: NEWS_TITLE,
-    description: NEWS_DESCRIPTION,
-    url: `${SITE_URL}/news`,
-    siteName: 'bohemo.',
-    type: 'website',
-    images: [OG_IMAGE],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: NEWS_TITLE,
-    description: NEWS_DESCRIPTION,
-    images: [OG_IMAGE],
-  },
-}
-
-// ── Region badge colours ──────────────────────────────────────────────────────
-const REGION_BADGE: Record<string, string> = {
-  India:           'bg-orange-50 text-orange-700 border border-orange-200',
-  'Southeast Asia':'bg-blue-50   text-blue-700   border border-blue-200',
-  Singapore:       'bg-blue-50   text-blue-700   border border-blue-200',
-  Indonesia:       'bg-blue-50   text-blue-700   border border-blue-200',
-  Thailand:        'bg-blue-50   text-blue-700   border border-blue-200',
-  Vietnam:         'bg-blue-50   text-blue-700   border border-blue-200',
-  Philippines:     'bg-blue-50   text-blue-700   border border-blue-200',
-  Global:          'bg-[#F0EDE6] text-[#6B6560]  border border-black/10',
-}
-
-function regionBadge(region: string) {
-  return REGION_BADGE[region] ?? 'bg-[#F0EDE6] text-[#6B6560] border border-black/10'
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-IN', {
-    day: 'numeric', month: 'short', year: 'numeric',
-  })
-}
+// v2 teardown stub: data and region filter wired, no design.
+export const metadata = buildMetadata({
+  title: 'AI News — bohemo.',
+  description: "What's happening in AI across India and Southeast Asia.",
+  path: '/news',
+})
 
 const REGIONS = ['India', 'Southeast Asia', 'Singapore', 'Indonesia']
 
@@ -57,143 +15,33 @@ interface Props {
   searchParams: { region?: string }
 }
 
-async function getNews(region?: string): Promise<NewsArticle[]> {
-  if (supabase) {
-    try {
-      let query = supabase
-        .from('news')
-        .select('*')
-        .order('published_at', { ascending: false })
-      if (region) query = query.eq('region', region)
-
-      const { data, error } = await query
-      if (!error && data) return data as NewsArticle[]
-    } catch {
-      // fall through to seed data
-    }
-  }
-
-  let news = [...SEED_NEWS].sort(
-    (a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime(),
-  )
-  if (region) news = news.filter((n) => n.region === region)
-  return news
-}
-
 export default async function NewsPage({ searchParams }: Props) {
-  const { region } = searchParams
-  const articles = await getNews(region)
-
-  const [featured, ...rest] = articles
+  const articles = await getNews(searchParams.region)
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-12">
-
-      {/* ── Page header ─────────────────────────────────── */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold tracking-tight text-[#0D0D0D]">AI News</h1>
-        <p className="text-[#6B6560] text-base mt-2">
-          What&rsquo;s happening in AI across India and Southeast Asia
-        </p>
-      </div>
-
-      {/* ── Region filter ───────────────────────────────── */}
-      <div className="mb-8 pb-6 border-b border-black/[0.08]">
-        <div className="flex items-center gap-2">
-          <span className="text-sm sm:text-xs font-medium text-[#6B6560] uppercase tracking-wide w-16 shrink-0">
-            Region
+    <>
+      <h1>AI News</h1>
+      <p>
+        Region: <Link href="/news">All</Link>
+        {REGIONS.map((r) => (
+          <span key={r}>
+            {' · '}
+            <Link href={`/news?region=${encodeURIComponent(r)}`}>{r}</Link>
           </span>
-          <div className="flex items-center gap-2 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            <NewsRegionFilter regions={REGIONS} currentRegion={region} />
-          </div>
-        </div>
-      </div>
+        ))}
+      </p>
 
-      {/* ── Empty state ─────────────────────────────────── */}
-      {articles.length === 0 && (
-        <div className="py-20 text-center">
-          <p className="text-[#6B6560]">No articles found.</p>
-          <a href="/news" className="mt-3 inline-flex items-center min-h-[44px] text-sm font-medium underline underline-offset-2">
-            Reset filters
-          </a>
-        </div>
-      )}
-
-      {/* ── Featured article (index 0) ───────────────────── */}
-      {featured && (
-        <NewsCardLink
-          href={featured.url}
-          articleTitle={featured.title}
-          region={featured.region}
-          className="group block mb-2"
-        >
-          <article className="bg-white rounded-2xl p-8 border border-black/[0.08] hover:border-black/20 hover:shadow-md transition-all duration-200">
-            {/* Source + date */}
-            <div className="flex items-center gap-2 text-sm sm:text-xs text-[#6B6560]">
-              <span>{featured.source}</span>
-              <span>·</span>
-              <span>{formatDate(featured.published_at)}</span>
-            </div>
-
-            {/* Title */}
-            <h2 className="text-2xl font-bold text-[#0D0D0D] mt-2 leading-snug group-hover:underline decoration-1 underline-offset-2">
-              {featured.title}
-            </h2>
-
-            {/* Summary — no truncation on featured */}
-            <p className="text-base text-[#6B6560] mt-3 leading-relaxed">
-              {featured.excerpt}
-            </p>
-
-            {/* Footer row */}
-            <div className="flex items-center justify-between mt-6">
-              <span className={`text-sm sm:text-xs font-medium px-2.5 py-0.5 rounded-full ${regionBadge(featured.region)}`}>
-                {featured.region}
-              </span>
-              <span className="text-sm sm:text-xs font-medium text-[#6B6560] group-hover:text-[#0D0D0D] transition-colors">
-                Read article →
-              </span>
-            </div>
-          </article>
-        </NewsCardLink>
-      )}
-
-      {/* ── Compact list (remaining articles) ───────────── */}
-      {rest.length > 0 && (
-        <div className="mt-8">
-          {rest.map((article) => (
-            <NewsCardLink
-              key={article.id}
-              href={article.url}
-              articleTitle={article.title}
-              region={article.region}
-              className="group block py-5 border-b border-black/[0.08] last:border-b-0"
-            >
-              {/* Top row: region badge + source (left) | date (right) */}
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className={`text-sm sm:text-xs font-medium px-2.5 py-0.5 rounded-full shrink-0 ${regionBadge(article.region)}`}>
-                    {article.region}
-                  </span>
-                  <span className="text-sm sm:text-xs text-[#6B6560] truncate">{article.source}</span>
-                </div>
-                <span className="text-sm sm:text-xs text-[#6B6560] shrink-0">{formatDate(article.published_at)}</span>
-              </div>
-
-              {/* Title */}
-              <h3 className="text-base font-semibold text-[#0D0D0D] mt-1 group-hover:underline decoration-1 underline-offset-2 leading-snug">
-                {article.title}
-              </h3>
-
-              {/* Summary */}
-              <p className="text-sm text-[#6B6560] mt-1 line-clamp-2 leading-relaxed">
-                {article.excerpt}
-              </p>
-            </NewsCardLink>
+      {articles.length > 0 ? (
+        <ul>
+          {articles.map((a) => (
+            <li key={a.id}>
+              <Link href={`/news/${a.id}`}>{a.title}</Link> — {a.source} — {a.region}
+            </li>
           ))}
-        </div>
+        </ul>
+      ) : (
+        <p>No stories yet.</p>
       )}
-
-    </div>
+    </>
   )
 }

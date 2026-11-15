@@ -1,60 +1,17 @@
-import { Suspense } from 'react'
-import ToolsGrid from '@/components/ToolsGrid'
-import ToolFilter from '@/components/ToolFilter'
-import ToolSearch from '@/components/ToolSearch'
-import { supabase } from '@/lib/supabase'
-import { SEED_TOOLS } from '@/lib/data'
-import { SITE_URL, OG_IMAGE } from '@/lib/site'
-import type { Tool } from '@/types'
-import type { Metadata } from 'next'
+import Link from 'next/link'
+import { getTools } from '@/lib/queries'
+import { buildMetadata } from '@/lib/seo'
+import { TOOL_CATEGORIES, PRICE_TYPES } from '@/types'
 
-const TOOLS_TITLE = 'AI Tools Directory — bohemo.'
-const TOOLS_DESCRIPTION = 'The best AI tools for India and Southeast Asia, curated by category, use case, and price.'
-
-export const metadata: Metadata = {
-  title: TOOLS_TITLE,
-  description: TOOLS_DESCRIPTION,
-  alternates: { canonical: '/tools' },
-  openGraph: {
-    title: TOOLS_TITLE,
-    description: TOOLS_DESCRIPTION,
-    url: `${SITE_URL}/tools`,
-    siteName: 'bohemo.',
-    type: 'website',
-    images: [OG_IMAGE],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: TOOLS_TITLE,
-    description: TOOLS_DESCRIPTION,
-    images: [OG_IMAGE],
-  },
-}
+// v2 teardown stub: data and filters wired, no design.
+export const metadata = buildMetadata({
+  title: 'AI Tools Directory — bohemo.',
+  description: 'The best AI tools for India and Southeast Asia, curated by category, use case, and price.',
+  path: '/tools',
+})
 
 interface Props {
   searchParams: { category?: string; price?: string }
-}
-
-async function getTools(category?: string, price?: string): Promise<Tool[]> {
-  // Try Supabase first; fall back to local seed data when not configured or failing
-  if (supabase) {
-    try {
-      let query = supabase.from('tools').select('*').order('created_at', { ascending: false })
-      if (category) query = query.eq('category', category)
-      if (price)    query = query.eq('price_type', price)
-
-      const { data, error } = await query
-      if (!error && data) return data as Tool[]
-    } catch {
-      // fall through to seed data
-    }
-  }
-
-  // Seed data fallback with same filters
-  let tools = SEED_TOOLS
-  if (category) tools = tools.filter((t) => t.category === category)
-  if (price)    tools = tools.filter((t) => t.price_type === price)
-  return tools
 }
 
 export default async function ToolsPage({ searchParams }: Props) {
@@ -62,55 +19,40 @@ export default async function ToolsPage({ searchParams }: Props) {
   const tools = await getTools(category, price)
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-12">
+    <>
+      <h1>AI Tools Directory ({tools.length})</h1>
 
-      {/* ── Page header ───────────────────────────────── */}
-      <div className="mb-8">
-        <div className="flex items-baseline gap-3 flex-wrap">
-          <h1 className="text-4xl font-bold tracking-tight text-[#0D0D0D]">
-            AI Tools Directory
-          </h1>
-          <span className="text-sm sm:text-xs px-3 py-1 rounded-full border border-black/10 text-[#6B6560] font-medium">
-            {tools.length} tools
+      <p>
+        Category: <Link href="/tools">All</Link>
+        {TOOL_CATEGORIES.map((c) => (
+          <span key={c}>
+            {' · '}
+            <Link href={`/tools?category=${encodeURIComponent(c)}`}>{c}</Link>
           </span>
-        </div>
-        <p className="text-[#6B6560] text-base mt-2">
-          The best AI tools for India and Southeast Asia
-        </p>
-        {(category || price) && (
-          <a
-            href="/tools"
-            className="mt-2 inline-flex items-center min-h-[44px] text-sm sm:text-xs font-medium text-[#6B6560] underline underline-offset-2 hover:text-[#0D0D0D] transition-colors"
-          >
-            Clear filters
-          </a>
-        )}
-      </div>
+        ))}
+      </p>
+      <p>
+        Price:
+        {PRICE_TYPES.map((p) => (
+          <span key={p.value}>
+            {' · '}
+            <Link href={`/tools?price=${p.value}`}>{p.label}</Link>
+          </span>
+        ))}
+      </p>
 
-      {/* ── Search ────────────────────────────────────── */}
-      <div className="mb-4">
-        <ToolSearch />
-      </div>
-
-      {/* ── Filter bar ────────────────────────────────── */}
-      <div className="mb-8 pb-6 border-b border-black/[0.08]">
-        <Suspense fallback={<div className="h-10 animate-pulse rounded-xl bg-cream-dark" />}>
-          <ToolFilter />
-        </Suspense>
-      </div>
-
-      {/* ── Tool grid ─────────────────────────────────── */}
-      <h2 className="sr-only">All tools</h2>
-      {tools.length === 0 ? (
-        <div className="py-20 text-center">
-          <p className="text-muted">No tools found for those filters.</p>
-          <a href="/tools" className="mt-3 inline-flex items-center min-h-[44px] text-sm font-medium underline underline-offset-2">
-            Reset filters
-          </a>
-        </div>
+      {tools.length > 0 ? (
+        <ul>
+          {tools.map((t) => (
+            <li key={t.id}>
+              <Link href={`/tools/${t.slug}`}>{t.name}</Link> — {t.category} — {t.price_label ?? t.price_type}
+              {t.verified ? ' — verified' : ''}
+            </li>
+          ))}
+        </ul>
       ) : (
-        <ToolsGrid tools={tools} />
+        <p>No tools match these filters.</p>
       )}
-    </div>
+    </>
   )
 }
