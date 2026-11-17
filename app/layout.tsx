@@ -1,29 +1,35 @@
-import type { Metadata } from 'next'
-import Link from 'next/link'
+import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { PostHogScript } from '@/components/PostHogScript'
+import { Nav } from '@/components/Nav'
+import { BottomTabBar } from '@/components/BottomTabBar'
+import { Footer } from '@/components/Footer'
 import { SITE_URL } from '@/lib/site'
+import { poppins, notoSans, ibmPlexMono } from '@/lib/fonts'
 
-// v2 teardown: bare shell. No brand, no styling, until the new design lands.
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: 'Bohemo — AI tools & news for India and Southeast Asia',
   description:
     'Discover the best AI tools and stay up to date with AI news — curated for India and Southeast Asia.',
-  icons: { icon: '/assets/favicon.png' },
+  icons: { icon: '/brand/bohemo-favicon.svg' },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" className={`${poppins.variable} ${notoSans.variable} ${ibmPlexMono.variable}`}>
+      <body className="bg-surface-page font-body text-text-body">
         <PostHogScript />
-        <header>
-          <nav>
-            <Link href="/">Bohemo</Link> · <Link href="/tools">Tools</Link> · <Link href="/news">News</Link>
-          </nav>
-        </header>
-        <main>{children}</main>
+        <Nav />
+        <main className="pb-[calc(theme(spacing.tabbar-h)+env(safe-area-inset-bottom))] md:pb-0">{children}</main>
+        <Footer />
+        <BottomTabBar />
       </body>
     </html>
   )
