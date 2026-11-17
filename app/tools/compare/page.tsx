@@ -5,7 +5,7 @@ import { PRICE_TYPES } from '@/types'
 
 // v2 teardown stub: data wired, no design. Usage: /tools/compare?tools=a,b,c
 export const metadata = buildMetadata({
-  title: 'Compare AI tools — bohemo.',
+  title: 'Compare AI tools — Bohemo',
   description:
     'Compare AI tools side by side — pricing, categories, tags, and regional relevance for India and Southeast Asia.',
   path: '/tools/compare',

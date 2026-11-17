@@ -13,8 +13,8 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const tool = await getTool(params.slug)
-  if (!tool) return { title: 'Tool not found — bohemo.' }
-  return buildMetadata({ title: `${tool.name} — bohemo.`, description: tool.description, path: `/tools/${tool.slug}` })
+  if (!tool) return { title: 'Tool not found — Bohemo' }
+  return buildMetadata({ title: `${tool.name} — Bohemo`, description: tool.description, path: `/tools/${tool.slug}` })
 }
 
 export async function generateStaticParams() {

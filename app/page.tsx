@@ -5,15 +5,15 @@ import { buildMetadata } from '@/lib/seo'
 import { SITE_URL } from '@/lib/site'
 
 // v2 teardown stub: data wired, no design.
-const TITLE = 'bohemo. — AI tools & news for India and Southeast Asia'
+const TITLE = 'Bohemo — AI tools & news for India and Southeast Asia'
 const DESCRIPTION =
   'Discover the best AI tools and stay up to date with AI news — curated for India and Southeast Asia.'
 
 export const metadata = buildMetadata({ title: TITLE, description: DESCRIPTION, path: '/' })
 
 const schemas = [
-  { '@context': 'https://schema.org', '@type': 'WebSite', name: 'bohemo.', url: SITE_URL, description: DESCRIPTION },
-  { '@context': 'https://schema.org', '@type': 'Organization', name: 'bohemo.', url: SITE_URL, description: DESCRIPTION },
+  { '@context': 'https://schema.org', '@type': 'WebSite', name: 'Bohemo', url: SITE_URL, description: DESCRIPTION },
+  { '@context': 'https://schema.org', '@type': 'Organization', name: 'Bohemo', url: SITE_URL, description: DESCRIPTION },
 ]
 
 export default async function HomePage() {
@@ -25,7 +25,7 @@ export default async function HomePage() {
         <script key={s['@type']} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }} />
       ))}
 
-      <h1>bohemo.</h1>
+      <h1>Bohemo</h1>
       <p>{DESCRIPTION}</p>
 
       <section>

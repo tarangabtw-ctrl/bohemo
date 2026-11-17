@@ -20,7 +20,7 @@ export function buildMetadata({ title, description, path, type = 'website', publ
       title,
       description,
       url: `${SITE_URL}${path === '/' ? '' : path}`,
-      siteName: 'bohemo.',
+      siteName: 'Bohemo',
       type,
       images: [OG_IMAGE],
       ...(publishedTime ? { publishedTime } : {}),

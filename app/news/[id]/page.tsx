@@ -12,9 +12,9 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const article = await getArticle(params.id)
-  if (!article) return { title: 'Story not found — bohemo.' }
+  if (!article) return { title: 'Story not found — Bohemo' }
   return buildMetadata({
-    title: `${article.title} — bohemo.`,
+    title: `${article.title} — Bohemo`,
     description: article.excerpt,
     path: `/news/${article.id}`,
     type: 'article',

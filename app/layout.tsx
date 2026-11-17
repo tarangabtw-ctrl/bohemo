@@ -7,7 +7,7 @@ import { SITE_URL } from '@/lib/site'
 // v2 teardown: bare shell. No brand, no styling, until the new design lands.
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: 'bohemo. — AI tools & news for India and Southeast Asia',
+  title: 'Bohemo — AI tools & news for India and Southeast Asia',
   description:
     'Discover the best AI tools and stay up to date with AI news — curated for India and Southeast Asia.',
   icons: { icon: '/assets/favicon.png' },
@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <PostHogScript />
         <header>
           <nav>
-            <Link href="/">bohemo.</Link> · <Link href="/tools">Tools</Link> · <Link href="/news">News</Link>
+            <Link href="/">Bohemo</Link> · <Link href="/tools">Tools</Link> · <Link href="/news">News</Link>
           </nav>
         </header>
         <main>{children}</main>

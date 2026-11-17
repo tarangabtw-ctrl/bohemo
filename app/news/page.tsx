@@ -4,7 +4,7 @@ import { buildMetadata } from '@/lib/seo'
 
 // v2 teardown stub: data and region filter wired, no design.
 export const metadata = buildMetadata({
-  title: 'AI News — bohemo.',
+  title: 'AI News — Bohemo',
   description: "What's happening in AI across India and Southeast Asia.",
   path: '/news',
 })

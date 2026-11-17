@@ -5,7 +5,7 @@ import { TOOL_CATEGORIES, PRICE_TYPES } from '@/types'
 
 // v2 teardown stub: data and filters wired, no design.
 export const metadata = buildMetadata({
-  title: 'AI Tools Directory — bohemo.',
+  title: 'AI Tools Directory — Bohemo',
   description: 'The best AI tools for India and Southeast Asia, curated by category, use case, and price.',
   path: '/tools',
 })
