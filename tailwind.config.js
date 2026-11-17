@@ -134,6 +134,14 @@ module.exports = {
         base: '180ms',
         slow: '320ms',
       },
+      keyframes: {
+        'bh-marquee': { to: { transform: 'translateX(-50%)' } },
+        'bh-pulse-opacity': { '0%, 100%': { opacity: 1 }, '50%': { opacity: 0.55 } },
+      },
+      animation: {
+        marquee: 'bh-marquee 90s linear infinite',
+        'pulse-fade': 'bh-pulse-opacity 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) infinite',
+      },
     },
   },
   plugins: [],

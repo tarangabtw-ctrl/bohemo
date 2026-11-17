@@ -4,6 +4,7 @@ import { PostHogScript } from '@/components/PostHogScript'
 import { Nav } from '@/components/Nav'
 import { BottomTabBar } from '@/components/BottomTabBar'
 import { Footer } from '@/components/Footer'
+import { MarketProvider } from '@/components/MarketProvider'
 import { SITE_URL } from '@/lib/site'
 import { poppins, notoSans, ibmPlexMono } from '@/lib/fonts'
 
@@ -26,10 +27,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${poppins.variable} ${notoSans.variable} ${ibmPlexMono.variable}`}>
       <body className="bg-surface-page font-body text-text-body">
         <PostHogScript />
-        <Nav />
-        <main className="pb-[calc(theme(spacing.tabbar-h)+env(safe-area-inset-bottom))] md:pb-0">{children}</main>
-        <Footer />
-        <BottomTabBar />
+        <MarketProvider>
+          <Nav />
+          <main className="pb-[calc(theme(spacing.tabbar-h)+env(safe-area-inset-bottom))] md:pb-0">{children}</main>
+          <Footer />
+          <BottomTabBar />
+        </MarketProvider>
       </body>
     </html>
   )

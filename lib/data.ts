@@ -1,6 +1,14 @@
 import type { Tool, NewsArticle } from '@/types'
 
-export const SEED_TOOLS: Tool[] = [
+type SeedTool = Omit<
+  Tool,
+  'languages' | 'payment_methods' | 'local_pricing' | 'low_bandwidth' | 'data_regions' | 'made_in_asia' | 'last_checked' | 'verified_at'
+>
+type SeedNews = Omit<NewsArticle, 'why_it_matters' | 'edition_date' | 'edition_rank' | 'tools_mentioned'>
+
+// Local Fit fields aren't seeded — every seed tool reads as "not checked yet"
+// until the real columns are filled in from Supabase.
+const SEED_TOOLS_BASE: SeedTool[] = [
   {
     id: '1',
     name: 'ChatGPT',
@@ -153,7 +161,19 @@ export const SEED_TOOLS: Tool[] = [
   },
 ]
 
-export const SEED_NEWS: NewsArticle[] = [
+export const SEED_TOOLS: Tool[] = SEED_TOOLS_BASE.map((t) => ({
+  ...t,
+  languages: null,
+  payment_methods: null,
+  local_pricing: null,
+  low_bandwidth: null,
+  data_regions: null,
+  made_in_asia: null,
+  last_checked: null,
+  verified_at: null,
+}))
+
+const SEED_NEWS_BASE: SeedNews[] = [
   {
     id: '1',
     title: "India's AI Startup Ecosystem Surpasses $2 Billion in Funding in 2024",
@@ -215,3 +235,11 @@ export const SEED_NEWS: NewsArticle[] = [
     created_at: '2024-11-20T10:00:00Z',
   },
 ]
+
+export const SEED_NEWS: NewsArticle[] = SEED_NEWS_BASE.map((n) => ({
+  ...n,
+  why_it_matters: null,
+  edition_date: null,
+  edition_rank: null,
+  tools_mentioned: [],
+}))

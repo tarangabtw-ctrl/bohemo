@@ -7,6 +7,7 @@ import { Logo } from './Logo'
 import { Icon } from './Icon'
 import { Button } from './Button'
 import { MarketPicker } from './MarketPicker'
+import { useMarket } from './MarketProvider'
 
 const LINKS = [
   { id: 'tools', label: 'Tools', href: '/tools' },
@@ -36,11 +37,11 @@ export function Nav() {
   const scrolled = useScrolled()
   const pathname = usePathname()
   const current = activeId(pathname)
-  const [market, setMarket] = useState('in')
+  const { market, setMarket } = useMarket()
   const [menuOpen, setMenuOpen] = useState(false)
 
   const linkClass = (id: string) =>
-    `inline-flex min-h-hit-min items-center rounded-pill px-4 text-[15px] font-medium no-underline transition-colors duration-fast focus-visible:outline focus-visible:outline-thick focus-visible:outline-focus-ring focus-visible:outline-offset-2 ${
+    `inline-flex min-h-hit-min items-center whitespace-nowrap rounded-pill px-4 text-[15px] font-medium no-underline transition-colors duration-fast focus-visible:outline focus-visible:outline-thick focus-visible:outline-focus-ring focus-visible:outline-offset-2 ${
       id === current
         ? 'bg-ink-900 text-cream-200 hover:bg-ink-900 hover:text-cream-200'
         : 'text-ink-700 hover:bg-cream-300 hover:text-text-strong'

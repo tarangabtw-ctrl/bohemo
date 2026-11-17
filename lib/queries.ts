@@ -24,6 +24,18 @@ export async function getToolOfWeek(): Promise<Tool | null> {
   }
 }
 
+/** Most recently added tools, for Home's "Trending" row. */
+export async function getTrendingTools(limit = 6): Promise<Tool[]> {
+  if (!supabase) return []
+  try {
+    const { data, error } = await supabase.from('tools').select('*').order('created_at', { ascending: false }).limit(limit)
+    if (error || !data) return []
+    return data as Tool[]
+  } catch {
+    return []
+  }
+}
+
 export async function getTools(category?: string, price?: string): Promise<Tool[]> {
   if (supabase) {
     try {
@@ -148,4 +160,58 @@ export async function getRelatedArticles(region: string, id: string): Promise<Ne
     }
   }
   return SEED_NEWS.filter((n) => n.region === region && n.id !== id).slice(0, 3)
+}
+
+// ── Editions (The Signal) ────────────────────────────────────────────────────
+// An edition is a set of up to 7 stories sharing an edition_date, ordered by
+// edition_rank. Stories without an edition_date never appear here.
+
+/** Most recent edition_date that has at least one story. */
+export async function getLatestEditionDate(): Promise<string | null> {
+  if (!supabase) return null
+  try {
+    const { data, error } = await supabase
+      .from('news')
+      .select('edition_date')
+      .not('edition_date', 'is', null)
+      .order('edition_date', { ascending: false })
+      .limit(1)
+    if (error || !data || data.length === 0) return null
+    return (data[0] as { edition_date: string }).edition_date
+  } catch {
+    return null
+  }
+}
+
+/** Stories for one edition date, ordered by rank (1–7). */
+export async function getEditionStories(date: string): Promise<NewsArticle[]> {
+  if (!supabase) return []
+  try {
+    const { data, error } = await supabase
+      .from('news')
+      .select('*')
+      .eq('edition_date', date)
+      .order('edition_rank', { ascending: true })
+    if (error || !data) return []
+    return data as NewsArticle[]
+  } catch {
+    return []
+  }
+}
+
+/** Past edition dates, most recent first — for the archive. */
+export async function getEditionDates(): Promise<string[]> {
+  if (!supabase) return []
+  try {
+    const { data, error } = await supabase
+      .from('news')
+      .select('edition_date')
+      .not('edition_date', 'is', null)
+      .order('edition_date', { ascending: false })
+    if (error || !data) return []
+    const dates = (data as { edition_date: string }[]).map((r) => r.edition_date)
+    return Array.from(new Set(dates))
+  } catch {
+    return []
+  }
 }
