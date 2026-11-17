@@ -1,8 +1,10 @@
-# CLAUDE.md — bohemo. project constitution (v2)
+# CLAUDE.md — Bohemo project constitution (v2)
 
 ## What this project is
 
-bohemo. (lowercase, with period — intentional, not a typo) is an AI ecosystem and marketplace for India and Southeast Asia: "the Bloomberg of AI for the Global South." Live surfaces: homepage, AI tools directory (with tool detail and compare), and AI news feed (with article pages). The agency arm and agents marketplace are not in this codebase yet.
+**Bohemo** (capital B, no full stop) is an AI ecosystem and marketplace for India and Southeast Asia: "the Bloomberg of AI for the Global South." Live surfaces: homepage, AI tools directory (with tool detail and compare), and AI news feed (with article pages). The agency arm and agents marketplace are not in this codebase yet.
+
+**The name is always `Bohemo`.** The old lowercase `bohemo.` (with a full stop) is retired. Never use it in code, copy, metadata, alt text, JSON-LD or commit messages. If you find it anywhere you are already editing, change it to `Bohemo`.
 
 The founder is non-technical. You are the engineering team. Write clean, conventional code. Do not get clever. Do not touch things you were not asked to touch.
 
@@ -12,8 +14,9 @@ The founder is non-technical. You are the engineering team. Write clean, convent
 
 - The entire v1 UI was scrapped on branch `redesign/v2`. v1 is preserved at git tag `v1-final`.
 - The old brand (cream/ink palette, Inter, "no shadows" rules) is **retired**. Do not reintroduce it.
-- Every page is currently an **unstyled stub**: data is wired, there is no design. The new design system has not been decided yet.
-- Until the new design system is written into the "Design system" section below, **do not add styling or invent a visual direction.** Build only what the spec asks for.
+- Every page is currently an **unstyled stub**: data is wired, there is no design yet.
+- The v2 design system **is decided**. It was built in Claude Design and arrives with the Claude Design handoff bundle. See the "Design system" section below.
+- Style only with that design system's tokens and components. **Do not invent a visual direction** or add values that aren't in the tokens. Build only what the spec asks for.
 - `redesign/` holds old HTML prototypes. They are kept for reference only. **Do not design from them.**
 
 ---
@@ -22,7 +25,7 @@ The founder is non-technical. You are the engineering team. Write clean, convent
 
 - **Framework:** Next.js 14, App Router (`/app`)
 - **Database:** Supabase (Mumbai / ap-south-1)
-- **Styling:** Tailwind CSS 3.3+ (`tailwind.config.js` is CommonJS `module.exports`; theme is empty pending v2 tokens)
+- **Styling:** Tailwind CSS 3.3+ (`tailwind.config.js` is CommonJS `module.exports`; theme gets the v2 design tokens from the handoff bundle)
 - **Hosting:** Vercel (auto-deploys `main`; branches get preview URLs)
 - **Newsletter:** Kit / ConvertKit via `/api/subscribe`
 - **Analytics:** PostHog via CDN snippet (`components/PostHogScript.tsx`, rendered in the root layout)
@@ -50,7 +53,7 @@ Never commit code that doesn't pass `npm run build`.
 | `lib/data.ts` | Seed data used when Supabase is unconfigured or a query fails | Do not expand. Do not use as a substitute for real data. |
 | `lib/supabase.ts` | Supabase client (null when env vars missing) | Don't change. |
 | `lib/seo.ts` | `buildMetadata()` — canonical, Open Graph, Twitter for every page | Every page exports metadata via this helper. |
-| `lib/analytics.ts` | `track(event, props)` — PostHog capture | Use from client components. Keep v1 event names (listed in the file). |
+| `lib/analytics.ts` | `track(event, props)` — PostHog capture | Use from client components. Keep the v1 event names (listed in the file); add new v2 events alongside them, never rename or remove old ones. |
 | `lib/subscribe.ts` | Client newsletter signup → `/api/subscribe` | Reuse; don't re-implement fetch logic in components. |
 | `app/api/subscribe/route.ts` | Writes to Supabase `subscribers` + Kit | Backend. Don't touch unless the spec says so. |
 | `app/sitemap.ts`, `app/robots.ts` | SEO | Update the sitemap when adding routes. |
@@ -107,9 +110,40 @@ All tables have Row Level Security (RLS) enabled.
 
 ## Design system
 
-**Not yet defined.** When the v2 design system is approved, its tokens (color, type, spacing, radius, components) go here and into `tailwind.config.js`. Until then: no styling work.
+**Source of truth:** the Bohemo design system in Claude Design, delivered with the Claude Design handoff bundle. Exact values (hex codes, type scale, spacing, radii, shadows) come from the bundle's tokens. They go into `tailwind.config.js` as the first task of the redesign. After that, use Tailwind theme classes only. **Never hand-type a hex value, font size or spacing value in a component.**
 
-Fixed regardless of design: the wordmark is `bohemo.` (lowercase, with period).
+Fixed decisions (do not change without a spec):
+
+- **Name:** `Bohemo`, capital B, no full stop.
+- **Palette:** white → cream → light brown, chosen in Claude Design. Ink (body text, primary buttons) is the logo's charcoal.
+- **Light browns:** surfaces, borders and tags only. Never use them for text, or for marks that carry meaning (Local Fit dots, edition progress, chart marks); those use the darker umber or ink. In the dot meters, filled = umber/ink and empty = light outline.
+- **Semantic colours:** use the semantic tokens (positive, negative, warning, info), not ad-hoc greens or reds. The charcoal ticker has its own light "up" and "down" tokens.
+- **Type:**
+  - Display: Poppins.
+  - Body/UI: Noto Sans, plus its script siblings.
+  - Data (prices, dates, edition numbers, ticker): IBM Plex Mono.
+  - Bengali: Noto Sans Bengali for body; the headline font follows the design system's final pick.
+  - Poppins has no Bengali, Thai or Vietnamese, so those scripts fall back to the matching Noto font.
+- **Font loading:**
+  - Load fonts with `next/font`, so they are self-hosted. No runtime calls to Google Fonts.
+  - Load Latin by default.
+  - Devanagari, Bengali, Thai and Vietnamese load only on pages that use them (unicode-range subsets).
+  - Fonts are the heaviest part of the page on 4G; keep the number of weights small.
+- **Motif:** the logo's pills and dots. Pills for tags, filters, chips, toggles and buttons. Dots for ratings and progress. Loading skeletons are shaped like the logo's pill rows.
+- **Logo:**
+  - Use the SVG mark from the bundle; minimum 24px.
+  - Under 24px, use the simplified square favicon (16px).
+  - Clear space is one dot.
+  - On charcoal, use the reversed or outline variant.
+  - The wordmark is a PNG until a vector exists; never redraw it.
+- **Accessibility:**
+  - WCAG AA everywhere: 4.5:1 for text; 3:1 for large text, icons, focus rings and meaningful marks.
+  - Touch targets at least 44px. Visible focus states.
+  - Respect `prefers-reduced-motion`.
+- **Never:** gradient washes, glassmorphism, emoji icons, left-border accent cards, stock photos of people, autoplay video.
+- **Mobile first:** design and test at 390px; nothing breaks below 640px. Mobile has a bottom tab bar (Home · Tools · News · Saved).
+
+Copy voice: founder-led, raw, honest, specific, short sentences. Bohemo says "we"; "I" appears only in the signed founder's note on Pricing. Banned words: revolutionary, unleash, supercharge, seamless, cutting-edge, game-changing, "the future of", "AI-powered". Never invent stats, testimonials, user counts or quotes. Use a `[PLACEHOLDER]` instead.
 
 ---
 
@@ -143,6 +177,8 @@ Fixed regardless of design: the wordmark is `bohemo.` (lowercase, with period).
 8. Never use `localhost` URLs in committed code.
 9. Never modify environment variables or `.env.local`.
 10. Never reintroduce v1 brand tokens or design from `redesign/` prototypes.
+11. Never write the name as `bohemo.` or `bohemo` in anything users see. It is `Bohemo`.
+12. Never hand-type colours, font sizes or spacing; use the design tokens.
 
 ---
 
@@ -162,3 +198,5 @@ Fixed regardless of design: the wordmark is `bohemo.` (lowercase, with period).
 - [ ] Nothing breaks below 640px
 - [ ] Data comes through `lib/queries.ts`, metadata through `lib/seo.ts`
 - [ ] No `console.log` left in committed code
+- [ ] The name reads `Bohemo` everywhere; colours and type come only from design tokens
+- [ ] Text and meaningful marks pass WCAG AA contrast
