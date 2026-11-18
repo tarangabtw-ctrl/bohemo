@@ -49,7 +49,9 @@ export function ToolsDirectory({ tools }: ToolsDirectoryProps) {
     const q = params.get('q')?.trim()
     const task = params.get('task')
     if (q) setQuery(q)
-    if (task && (TOOL_CATEGORIES as string[]).includes(task)) setCategories([task])
+    // Case doesn't matter: the tool page links with ?task=writing.
+    const category = task ? TOOL_CATEGORIES.find((c) => c.toLowerCase() === task.toLowerCase()) : undefined
+    if (category) setCategories([category])
   }, [])
 
   const anyVerified = tools.some((t) => t.verified_at)
