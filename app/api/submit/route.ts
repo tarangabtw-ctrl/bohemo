@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { validateSubmission } from '@/lib/validateSubmission'
 import { SUBMISSION_TYPES, type SubmissionType } from '@/types'
 
@@ -51,12 +51,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'invalid_fields', fields: invalidFields }, { status: 400 })
   }
 
-  if (!supabase) {
+  if (!supabaseAdmin) {
+    console.error('[submit] SUPABASE_SERVICE_ROLE_KEY or NEXT_PUBLIC_SUPABASE_URL is not set.')
     return NextResponse.json({ error: 'server_error' }, { status: 500 })
   }
 
-  // anon has INSERT only on submissions (no SELECT) — never chain .select() here.
-  const { error } = await supabase.from('submissions').insert({
+  // Service role write, after validation above. The public key has no access to submissions.
+  const { error } = await supabaseAdmin.from('submissions').insert({
     type,
     email: email || null,
     payload,

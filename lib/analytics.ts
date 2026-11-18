@@ -18,7 +18,8 @@
 //   newsletter_subscribed  { source: home | article | edition }
 //   news_to_tool_click     { slug, story_id?, source: article | edition_rail }
 //   tool_to_news_click     { slug, story_id }
-//   checkout_started       { source, plan }  (opens the Pro waitlist until payments go live)
+//   checkout_started       (reserved for real checkout: nothing sends it until payments go live)
+//   waitlist_opened        { source: pricing | get_pro_link, plan }  (the Pro waitlist form opens)
 //   outbound_tool_click    { slug, source: tool_page | compare }
 
 type PostHogWindow = Window & { posthog?: { capture: (event: string, props?: object) => void } }

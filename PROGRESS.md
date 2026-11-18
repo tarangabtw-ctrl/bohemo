@@ -10,7 +10,7 @@
 
 8. `/how-we-rate`, `/about` (story example from the latest real story), `/saved` (tools and stories tabs, 20-save meter, sign-in nudge after 3 saves, full state with Get Pro), `/sign-in` (UI only: says plainly that sign-in isn't on yet; no email is sent), onboarding on first Home visit (mobile sheet with focus trap, desktop card, toast), command search (⌘K, "/", nav bar, mobile icon; data from read-only `/api/search`; arrow keys, Enter, Escape, recent searches on this device), 404, error, offline banner, `/tools` loading. Every Get Pro links to `/pricing?waitlist=1`, which opens the waitlist form. `/tools` applies `?q=` and `?task=`. Report a mistake now uses the shared rules: a link typed without https:// gets it added, then the strict check (links with `user:pass@` are refused).
 
-9. PostHog: v1 event names unchanged; the 15 v2 events added and documented in `lib/analytics.ts` (who sends each, with which properties). `stack_cloned` is reserved: stacks can't be cloned yet, so nothing sends it. `checkout_started` fires when the Pro waitlist opens, until payments go live. Saves fire only when saving, and `edition_completed` once per edition per device.
+9. PostHog: v1 event names unchanged; the 15 v2 events added and documented in `lib/analytics.ts` (who sends each, with which properties). `stack_cloned` is reserved: stacks can't be cloned yet, so nothing sends it. `checkout_started` is reserved for real checkout; the Pro waitlist sends `waitlist_opened` instead. Saves fire only when saving, and `edition_completed` once per edition per device.
 
 10. Newsletter: `/api/subscribe` now checks the Kit config first (key set, form ID numeric) and adds to Kit before writing to Supabase. If Kit fails, nothing is written, so a retry isn't wrongly told "already subscribed". A Supabase failure after Kit succeeds still counts as subscribed. Config problems show in the Vercel function logs (values never logged). Form copy is in Bohemo's voice. **Not yet working end to end: the env values are wrong** (see "Newsletter: fix before testing" below).
 
@@ -28,6 +28,13 @@ These write rows, so they are never run during the build.
 - [ ] Honeypot: none of the checks above should create a second row, and a real browser's autofill must not fill the hidden `fax_only` field (submissions with it filled are silently dropped).
 
 - [ ] **Newsletter: fix the Kit env vars first, then test.** Checked 18 Nov 2026 with read-only Kit calls: `CONVERTKIT_FORM_ID` holds the Kit **API secret** (it authenticates as one), not the form's number, and `CONVERTKIT_API_KEY` is rejected by Kit (401). Set `CONVERTKIT_API_KEY` to the v3 API key (Kit → Settings → Developer) and `CONVERTKIT_FORM_ID` to the form's number (from its URL in Kit), in `.env.local` and in Vercel for Preview and Production. Consider regenerating the API secret, since it has been sent in the subscribe URL path to Kit. Then on the preview: subscribe with a real address → it appears in Kit under that form, one `subscribers` row, the form says "You're in…"; the same address again → "You're already on the list…".
+
+## Security: server-only writes (18 Nov 2026)
+
+- `/api/submit` and `/api/subscribe` write with `lib/supabaseAdmin.ts` (service role key, `server-only`, never `NEXT_PUBLIC_`, never logged). Checked after build: the key appears in no file under `.next/`. Reads stay on the public key.
+- [ ] Add `SUPABASE_SERVICE_ROLE_KEY` in Vercel (Preview, and Production once v2 is merged). Without it, forms on the preview return "That broke" and the newsletter skips our Supabase copy.
+- [ ] Apply `supabase/migrations/20261118120000_server_only_writes.sql` **after** the key is in Vercel: drops the `submissions_insert` policy and revokes EXECUTE on `rls_auto_enable()` from PUBLIC, anon and authenticated. Written, not applied.
+- [ ] **When redesign/v2 is merged into main:** drop `subscribers_insert` too (`DROP POLICY IF EXISTS "subscribers_insert" ON public.subscribers;`). It stays until then because main's coming-soon page posts to main's own `/api/subscribe`, which inserts with the public key.
 
 ## Pre-launch fixes
 

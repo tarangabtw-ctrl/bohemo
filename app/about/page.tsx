@@ -31,7 +31,7 @@ const TOC = [
   { id: 'standards', label: 'Editorial standards' },
   { id: 'corrections', label: 'Corrections' },
   { id: 'independence', label: 'Independence' },
-  { id: 'team', label: 'Team' },
+  { id: 'how', label: 'How Bohemo works' },
   { id: 'contact', label: 'Contact' },
 ]
 
@@ -47,6 +47,24 @@ const RULES: [string, string][] = [
     'Every story names the publication that reported it and links to their article, at the top and again at the end.',
   ],
   ['“Why it matters” is ours', 'The line under each story is Bohemo’s view, not the source’s. That’s why it is labelled.'],
+]
+
+// How Bohemo works: the text in brackets is for Taranga to write.
+const HOW: { title: string; body: string; link?: { href: string; label: string } }[] = [
+  {
+    title: 'How we pick stories',
+    body: '[HOW STORIES ARE CHOSEN FOR THE SIGNAL: WHAT MAKES THE CUT, WHO DECIDES, WHY SEVEN]',
+    link: { href: '/news', label: 'Read today’s edition →' },
+  },
+  {
+    title: 'How we score tools',
+    body: '[HOW A TOOL GETS SCORED: WHO CHECKS, HOW OFTEN, WHAT A CHECK INVOLVES]',
+    link: { href: '/how-we-rate', label: 'How we rate tools →' },
+  },
+  {
+    title: 'Where our news comes from',
+    body: '[SOURCES: WHICH PUBLICATIONS AND FEEDS WE READ, IN WHICH LANGUAGES, AND WHAT WE WON’T USE]',
+  },
 ]
 
 const CONTACT: [string, string, string][] = [
@@ -244,22 +262,26 @@ export default async function AboutPage() {
         </div>
       </EditorialSection>
 
-      <EditorialSection id="team" n={6} title="Team">
-        <div className="grid grid-cols-2 gap-x-3 gap-y-4 md:grid-cols-3 md:gap-5">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="grid gap-1">
-              <div
-                aria-label="Photo placeholder"
-                className="mb-2 grid aspect-[4/5] place-items-center rounded-md border-hairline border-dashed border-border-strong bg-surface-inset"
-              >
-                <span className="rounded-xs bg-surface-page px-2 py-0.5 font-mono text-xs text-ink-700">[PHOTO]</span>
-              </div>
-              <p className="text-body font-bold">[NAME]</p>
-              <p className="font-mono text-[12.5px] text-ink-700">[ROLE · BASED IN]</p>
+      <EditorialSection id="how" n={6} title="How Bohemo works">
+        <p className={PROSE}>[ONE OR TWO LINES: HOW THE PIECES FIT TOGETHER, IN BOHEMO’S VOICE]</p>
+        <dl className="m-0 border-t-hairline border-border-strong">
+          {HOW.map((item) => (
+            <div
+              key={item.title}
+              className="grid gap-1 border-b-hairline border-border-hairline py-3.5 md:grid-cols-[200px_minmax(0,1fr)_auto] md:items-baseline md:gap-6"
+            >
+              <dt className="font-display text-lg font-bold tracking-[-0.01em]">{item.title}</dt>
+              <dd className="m-0 text-pretty font-mono text-body-sm leading-normal text-ink-700">{item.body}</dd>
+              {item.link && (
+                <dd className="m-0">
+                  <Link href={item.link.href} className={MORE_LINK}>
+                    {item.link.label}
+                  </Link>
+                </dd>
+              )}
             </div>
           ))}
-        </div>
-        <p className="font-mono text-body-sm text-ink-700">[TEAM: WHO WRITES, WHO SCORES, WHERE WE WORK FROM]</p>
+        </dl>
       </EditorialSection>
 
       <EditorialSection id="contact" n={7} title="Contact">

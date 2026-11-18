@@ -47,7 +47,7 @@ const ROWS: [string, Cell, Cell, boolean][] = [
   ['Saves: tools, stacks and stories', '20 saves', 'Unlimited', true],
   ['Ads', 'Sponsored spots, always labelled', 'No ads', true],
   ['Agents marketplace', 'When it opens', 'Early access', true],
-  ['GST invoice', false, true, true],
+  ['Company and GSTIN saved for your invoice', false, true, true],
 ]
 
 const FAQ: [string, string][] = [
@@ -79,7 +79,7 @@ function Plans({ billing, market }: { billing: BillingPlan; market: { id: string
   function openWaitlist() {
     setJoining(true)
     track('waitlist_click', { source: 'pricing', plan: billing })
-    track('checkout_started', { source: 'pricing', plan: billing })
+    track('waitlist_opened', { source: 'pricing', plan: billing })
   }
 
   // Every "Get Pro" button on the site links to /pricing?waitlist=1: open the form straight away.
@@ -87,7 +87,7 @@ function Plans({ billing, market }: { billing: BillingPlan; market: { id: string
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get('waitlist') === '1') {
       setJoining(true)
-      track('checkout_started', { source: 'get_pro_link', plan: billing })
+      track('waitlist_opened', { source: 'get_pro_link', plan: billing })
     }
   }, [])
 

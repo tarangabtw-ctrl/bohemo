@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import type { Subscriber } from '@/types'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -59,16 +59,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'server_error' }, { status: 500 })
   }
 
-  // Our own copy of the list. Kit already has them, so a failure here doesn't fail the signup.
-  if (supabase) {
-    const row: Pick<Subscriber, 'email'> = { email }
-    const { error } = await supabase.from('subscribers').insert(row)
-    if (error?.code === '23505') {
-      return NextResponse.json({ status: 'duplicate' })
-    }
-    if (error) {
-      console.error('[subscribe] Saved in Kit, but the Supabase insert failed:', error.code)
-    }
+  // Our own copy of the list (service role write). Kit already has them, so a failure here doesn't fail the signup.
+  if (!supabaseAdmin) {
+    console.error('[subscribe] Saved in Kit, but SUPABASE_SERVICE_ROLE_KEY or NEXT_PUBLIC_SUPABASE_URL is not set.')
+    return NextResponse.json({ status: 'success' })
+  }
+  const row: Pick<Subscriber, 'email'> = { email }
+  const { error } = await supabaseAdmin.from('subscribers').insert(row)
+  if (error?.code === '23505') {
+    return NextResponse.json({ status: 'duplicate' })
+  }
+  if (error) {
+    console.error('[subscribe] Saved in Kit, but the Supabase insert failed:', error.code)
   }
 
   return NextResponse.json({ status: 'success' })
