@@ -1,4 +1,4 @@
-// Pro prices, in rupees with GST included. Payments aren't live yet (see SPEC.md):
+// Pro prices, in rupees. Payments aren't live yet (see SPEC.md):
 // until they are, every "Get Pro" opens the founding-member waitlist form.
 export const PRO_PRICE = {
   monthly: '₹499',

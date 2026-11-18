@@ -54,7 +54,7 @@ const FAQ: [string, string][] = [
   ['Can I cancel any time?', '[ANSWER: HOW TO CANCEL, AND WHAT HAPPENS TO PRO ACCESS UNTIL THE PERIOD ENDS]'],
   ['Can I get a refund?', '[ANSWER: REFUND TERMS FOR ANNUAL AND MONTHLY]'],
   ['Is there a student price?', '[ANSWER: STUDENT PRICE AND HOW WE VERIFY]'],
-  ['Can I pay for my whole team?', '[ANSWER: TEAM BILLING, ONE GST INVOICE, MINIMUM SEATS]'],
+  ['Can I pay for my whole team?', '[ANSWER: TEAM BILLING, ONE INVOICE, MINIMUM SEATS]'],
   ['What do you do with my data?', '[ANSWER: WHAT WE STORE, WHERE IT IS STORED, WHAT WE NEVER SELL]'],
 ]
 
@@ -155,7 +155,7 @@ function Plans({ billing, market }: { billing: BillingPlan; market: { id: string
                 {annual ? 'Get Pro, annual' : 'Get Pro, monthly'}
               </button>
               <p className="text-center text-[13px] leading-snug text-sand-400">
-                {market.id !== 'in' ? `Priced for India (₹) until we price ${market.name}.` : 'GST included. Receipt with every payment.'}
+                {market.id !== 'in' ? `Priced for India (₹) until we price ${market.name}.` : 'Receipt with every payment.'}
               </p>
             </div>
           )}
@@ -348,7 +348,7 @@ export function PricingView() {
               <div>
                 <h1 className="max-w-[820px] font-display text-display-xl font-extrabold text-text-strong">Free to read. Pro when you build.</h1>
                 <p className="mt-3 max-w-[620px] text-pretty text-[17px] leading-normal text-ink-700 md:mt-4 md:text-[19px]">
-                  Prices in ₹, GST included. Pay by UPI or card.
+                  Prices in ₹. Pay by UPI or card.
                 </p>
               </div>
               <div className="grid justify-items-start gap-2 pb-1 md:justify-items-end">

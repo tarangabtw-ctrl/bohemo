@@ -90,7 +90,7 @@ export function ExpenseIt({ plan, market }: ExpenseItProps) {
           ['Billed to', 'Your company name'],
           ['GSTIN', 'Your GSTIN'],
           ['Plan', `Pro · ${annual ? 'annual' : 'monthly'}`],
-          ['Total, incl. GST', annual ? PRO_PRICE.annual : PRO_PRICE.monthly],
+          ['Total', annual ? PRO_PRICE.annual : PRO_PRICE.monthly],
         ].map(([k, v]) => (
           <div key={k} className="contents">
             <dt className="border-b-hairline border-border-hairline py-2 text-ink-700">{k}</dt>
