@@ -1,10 +1,13 @@
-import Link from 'next/link'
+import { EmptyState } from '@/components/EmptyState'
 
 export default function NotFound() {
   return (
-    <div>
-      <h1>Story not found.</h1>
-      <Link href="/news">Go back</Link>
-    </div>
+    <EmptyState
+      kind="notfound"
+      title="We can’t find that story."
+      body="It may have moved. Today’s edition is a good place to start."
+      actionLabel="Go to The Signal"
+      actionHref="/news"
+    />
   )
 }

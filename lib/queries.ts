@@ -7,6 +7,15 @@ import type { Tool, NewsArticle } from '@/types'
 
 export type NewsHeadline = Pick<NewsArticle, 'id' | 'title' | 'source' | 'published_at' | 'url'>
 
+/** One story in the edition index: enough to list editions, number them and time them. */
+export type EditionIndexStory = Pick<
+  NewsArticle,
+  'id' | 'title' | 'excerpt' | 'why_it_matters' | 'region' | 'source' | 'published_at'
+> & {
+  edition_date: string
+  edition_rank: number | null
+}
+
 // ── Tools ────────────────────────────────────────────────────────────────────
 
 export async function getToolOfWeek(): Promise<Tool | null> {
@@ -229,6 +238,27 @@ export async function getEditionDates(): Promise<string[]> {
     if (error || !data) return []
     const dates = (data as { edition_date: string }[]).map((r) => r.edition_date)
     return Array.from(new Set(dates))
+  } catch {
+    return []
+  }
+}
+
+/**
+ * Every story that belongs to an edition, newest edition first, rank order inside
+ * each one. Light columns only. Used to number editions (#1 is the first ever),
+ * list past editions and find the story after this one.
+ */
+export async function getEditionIndex(): Promise<EditionIndexStory[]> {
+  if (!supabase) return []
+  try {
+    const { data, error } = await supabase
+      .from('news')
+      .select('id, title, excerpt, why_it_matters, region, source, published_at, edition_date, edition_rank')
+      .not('edition_date', 'is', null)
+      .order('edition_date', { ascending: false })
+      .order('edition_rank', { ascending: true })
+    if (error || !data) return []
+    return data as EditionIndexStory[]
   } catch {
     return []
   }

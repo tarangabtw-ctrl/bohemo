@@ -4,6 +4,10 @@ import { useCallback, useEffect, useState } from 'react'
 
 const SAVED_KEY = 'bohemo:saved-tools'
 const COMPARE_KEY = 'bohemo:compare-tools'
+const SAVED_STORIES_KEY = 'bohemo:saved-stories'
+const READ_STORIES_KEY = 'bohemo:read-stories'
+// Read marks only matter for the last week of editions; keep the list short.
+const MAX_READ = 200
 const MAX_COMPARE = 3
 // Fired on window after every write, so every component using these hooks on
 // the page (e.g. the tool page's action card and its Alternatives) stays in sync.
@@ -87,4 +91,37 @@ export function useCompareTray() {
   const clear = useCallback(() => write([]), [write])
 
   return { compare, isComparing: (slug: string) => compare.includes(slug), toggle, remove, replace, clear, max: MAX_COMPARE }
+}
+
+/** Saved news story ids, persisted across pages (shown on /saved). */
+export function useSavedStories() {
+  const [saved, write] = useStoredList(SAVED_STORIES_KEY)
+
+  const toggle = useCallback(
+    (id: string) => write(saved.includes(id) ? saved.filter((s) => s !== id) : [...saved, id]),
+    [saved, write],
+  )
+
+  const isSaved = useCallback((id: string) => saved.includes(id), [saved])
+
+  return { saved, isSaved, toggle }
+}
+
+/** Story ids the reader has opened, for "3 of 7 read" in The Signal. */
+export function useReadStories() {
+  const [read, write] = useStoredList(READ_STORIES_KEY)
+
+  // Reads storage directly: markRead runs on page mount, before this hook's state has loaded.
+  const markRead = useCallback(
+    (id: string) => {
+      const current = readList(READ_STORIES_KEY)
+      if (current.includes(id)) return
+      write([...current, id].slice(-MAX_READ))
+    },
+    [write],
+  )
+
+  const isRead = useCallback((id: string) => read.includes(id), [read])
+
+  return { read, isRead, markRead }
 }
