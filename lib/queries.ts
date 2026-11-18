@@ -98,6 +98,24 @@ export async function getToolsBySlug(slugs: string[]): Promise<Tool[]> {
   return slugs.map((s) => tools.find((t) => t.slug === s)).filter((t): t is Tool => Boolean(t))
 }
 
+/** Stories that mention a tool (news.tools_mentioned holds tool slugs), newest first. */
+export async function getNewsForTool(slug: string, limit = 3): Promise<NewsArticle[]> {
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('news')
+        .select('*')
+        .contains('tools_mentioned', [slug])
+        .order('published_at', { ascending: false })
+        .limit(limit)
+      if (!error && data) return data as NewsArticle[]
+    } catch {
+      // fall through to seed data
+    }
+  }
+  return SEED_NEWS.filter((n) => n.tools_mentioned.includes(slug)).slice(0, limit)
+}
+
 // ── News ─────────────────────────────────────────────────────────────────────
 
 export async function getLatestNews(limit = 3): Promise<NewsHeadline[]> {

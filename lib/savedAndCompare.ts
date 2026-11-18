@@ -5,6 +5,9 @@ import { useCallback, useEffect, useState } from 'react'
 const SAVED_KEY = 'bohemo:saved-tools'
 const COMPARE_KEY = 'bohemo:compare-tools'
 const MAX_COMPARE = 3
+// Fired on window after every write, so every component using these hooks on
+// the page (e.g. the tool page's action card and its Alternatives) stays in sync.
+const CHANGE_EVENT = 'bohemo:list-change'
 
 function readList(key: string): string[] {
   if (typeof window === 'undefined') return []
@@ -23,20 +26,42 @@ function writeList(key: string, list: string[]) {
   } catch {
     // localStorage unavailable — the in-memory state still works for this session
   }
+  window.dispatchEvent(new CustomEvent(CHANGE_EVENT, { detail: { key, list } }))
+}
+
+/** A string list in localStorage, shared by every hook instance on the page and across tabs. */
+function useStoredList(key: string) {
+  const [list, setList] = useState<string[]>([])
+
+  useEffect(() => {
+    setList(readList(key))
+    function onChange(e: Event) {
+      const detail = (e as CustomEvent<{ key: string; list: string[] }>).detail
+      if (detail?.key === key) setList(detail.list)
+    }
+    function onStorage(e: StorageEvent) {
+      if (e.key === key) setList(readList(key))
+    }
+    window.addEventListener(CHANGE_EVENT, onChange)
+    window.addEventListener('storage', onStorage)
+    return () => {
+      window.removeEventListener(CHANGE_EVENT, onChange)
+      window.removeEventListener('storage', onStorage)
+    }
+  }, [key])
+
+  const write = useCallback((next: string[]) => writeList(key, next), [key])
+  return [list, write] as const
 }
 
 /** Saved tool slugs, persisted across pages. SPEC: "build it for real" with localStorage. */
 export function useSavedTools() {
-  const [saved, setSaved] = useState<string[]>([])
-  useEffect(() => setSaved(readList(SAVED_KEY)), [])
+  const [saved, write] = useStoredList(SAVED_KEY)
 
-  const toggle = useCallback((slug: string) => {
-    setSaved((prev) => {
-      const next = prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]
-      writeList(SAVED_KEY, next)
-      return next
-    })
-  }, [])
+  const toggle = useCallback(
+    (slug: string) => write(saved.includes(slug) ? saved.filter((s) => s !== slug) : [...saved, slug]),
+    [saved, write],
+  )
 
   const isSaved = useCallback((slug: string) => saved.includes(slug), [saved])
 
@@ -45,35 +70,21 @@ export function useSavedTools() {
 
 /** Compare tray slugs (max 3), persisted across pages. */
 export function useCompareTray() {
-  const [compare, setCompare] = useState<string[]>([])
-  useEffect(() => setCompare(readList(COMPARE_KEY)), [])
+  const [compare, write] = useStoredList(COMPARE_KEY)
 
-  const toggle = useCallback((slug: string) => {
-    setCompare((prev) => {
-      if (prev.includes(slug)) {
-        const next = prev.filter((s) => s !== slug)
-        writeList(COMPARE_KEY, next)
-        return next
-      }
-      if (prev.length >= MAX_COMPARE) return prev
-      const next = [...prev, slug]
-      writeList(COMPARE_KEY, next)
-      return next
-    })
-  }, [])
+  const toggle = useCallback(
+    (slug: string) => {
+      if (compare.includes(slug)) write(compare.filter((s) => s !== slug))
+      else if (compare.length < MAX_COMPARE) write([...compare, slug])
+    },
+    [compare, write],
+  )
 
-  const remove = useCallback((slug: string) => {
-    setCompare((prev) => {
-      const next = prev.filter((s) => s !== slug)
-      writeList(COMPARE_KEY, next)
-      return next
-    })
-  }, [])
+  const remove = useCallback((slug: string) => write(compare.filter((s) => s !== slug)), [compare, write])
 
-  const clear = useCallback(() => {
-    setCompare([])
-    writeList(COMPARE_KEY, [])
-  }, [])
+  const replace = useCallback((slugs: string[]) => write(slugs.slice(0, MAX_COMPARE)), [write])
 
-  return { compare, isComparing: (slug: string) => compare.includes(slug), toggle, remove, clear, max: MAX_COMPARE }
+  const clear = useCallback(() => write([]), [write])
+
+  return { compare, isComparing: (slug: string) => compare.includes(slug), toggle, remove, replace, clear, max: MAX_COMPARE }
 }

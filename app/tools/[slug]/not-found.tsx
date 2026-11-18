@@ -1,10 +1,13 @@
-import Link from 'next/link'
+import { EmptyState } from '@/components/EmptyState'
 
 export default function NotFound() {
   return (
-    <div>
-      <h1>Tool not found.</h1>
-      <Link href="/tools">Go back</Link>
-    </div>
+    <EmptyState
+      kind="notfound"
+      title="We don’t list that tool."
+      body="It may have moved, or we haven’t checked it yet."
+      actionLabel="Browse all tools"
+      actionHref="/tools"
+    />
   )
 }

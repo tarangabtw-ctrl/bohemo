@@ -54,3 +54,43 @@ export function computeLocalFit(tool: Tool, marketId: string, marketName: string
   const dots = criteria.map((c) => c.status === 'pass')
   return { criteria, dots, confirmed, notCheckedYet }
 }
+
+/** One line per criterion for the tool page and Compare, written only from the tool's own data. */
+export function localFitNotes(tool: Tool, marketId: string, marketName: string): string[] {
+  const fit = computeLocalFit(tool, marketId, marketName)
+  const [lang, pay, price, bandwidth, data] = fit.criteria.map((c) => c.status)
+  const pricingKeys = tool.local_pricing ? Object.keys(tool.local_pricing) : []
+  return [
+    lang === 'pass'
+      ? `Lists ${(tool.languages ?? []).join(', ')}.`
+      : lang === 'fail'
+        ? 'We checked. It lists no local languages.'
+        : 'We have not checked which languages it speaks.',
+    pay === 'pass'
+      ? `Takes ${(tool.payment_methods ?? []).join(', ')}.`
+      : pay === 'fail'
+        ? 'We checked. It takes no local payment methods.'
+        : 'We have not checked which payment methods it takes.',
+    price === 'pass'
+      ? `Priced in ${pricingKeys.join(', ')}.`
+      : price === 'fail'
+        ? 'We checked. It has no local-currency pricing.'
+        : 'We have not checked its local-currency pricing.',
+    bandwidth === 'pass'
+      ? 'Works on a low-end Android phone and a slow connection.'
+      : bandwidth === 'fail'
+        ? 'We checked. It struggles on a low-end phone or a slow connection.'
+        : 'We have not tested it on a low-end Android phone or a slow connection.',
+    data === 'pass'
+      ? `Stores data in ${marketName}.`
+      : data === 'fail'
+        ? `We checked. It does not store data in ${marketName}.`
+        : 'We have not checked where it stores data.',
+  ]
+}
+
+export const FIT_STATUS_LABEL: Record<FitStatus, string> = {
+  pass: 'Confirmed',
+  fail: 'Checked · no',
+  unchecked: 'Not checked yet',
+}
