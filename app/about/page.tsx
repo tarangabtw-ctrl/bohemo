@@ -256,9 +256,6 @@ export default async function AboutPage() {
           <Link href="/how-we-rate#never" className={MORE_LINK}>
             What money can and can’t buy →
           </Link>
-          <Link href="/pricing" className={MORE_LINK}>
-            Why we started Bohemo: the founder’s note on Pricing →
-          </Link>
         </div>
       </EditorialSection>
 

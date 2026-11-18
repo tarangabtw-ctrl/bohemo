@@ -155,7 +155,7 @@ function Plans({ billing, market }: { billing: BillingPlan; market: { id: string
                 {annual ? 'Get Pro, annual' : 'Get Pro, monthly'}
               </button>
               <p className="text-center text-[13px] leading-snug text-sand-400">
-                {market.id !== 'in' ? `Priced for India (₹) until we price ${market.name}.` : 'GST included. Invoice with every payment.'}
+                {market.id !== 'in' ? `Priced for India (₹) until we price ${market.name}.` : 'GST included. Receipt with every payment.'}
               </p>
             </div>
           )}
@@ -250,16 +250,6 @@ function ForReaders({ billing, market }: { billing: BillingPlan; market: { id: s
             ))}
           </tbody>
         </table>
-      </section>
-
-      <section aria-label="A note from the founder" className="mx-auto mt-10 grid max-w-container-read gap-4 rounded-lg border-hairline border-border-hairline bg-surface-raised px-5 pb-6 pt-7 md:mt-16 md:gap-5 md:px-[52px] md:pb-10 md:pt-11">
-        <p className="text-pretty text-[17px] leading-relaxed text-text-strong md:text-body-lg">
-          Most AI news is written in San Francisco, for San Francisco. Most AI tools assume you speak English and pay in dollars. That leaves out most of the world, including the place I&apos;m building this from.
-        </p>
-        <p className="text-pretty text-[17px] leading-relaxed text-text-strong md:text-body-lg">
-          Bohemo is my attempt to fix that. Pro keeps it independent. No company can pay to change its Local Fit score, and sponsored spots are always labelled. Your subscription pays for tools tested by hand and for reporting from the markets the West skips.
-        </p>
-        <p className="mt-2 border-t-hairline border-border-strong pt-5 text-body font-semibold">— Taranga, founder, Bohemo</p>
       </section>
 
       <section aria-labelledby="faq-heading" className="mx-auto max-w-[800px] pb-10 pt-10 md:pb-[72px] md:pt-16">
