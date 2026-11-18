@@ -6,6 +6,7 @@
 4. `/tools` directory with filters, sort, save, compare tray, sponsored row and Stacks.
 5. `/tools/[slug]` (Local Fit breakdown, Report a mistake → `/api/submit`, alternatives, news, what changed, Verified box) and `/compare` (desktop table, mobile swipe tabs, hide-what's-the-same); `/tools/compare` redirects to `/compare`.
 6. `/news` The Signal (today's edition with region tabs, read progress, "You're caught up"; "lands at 8:00 IST" state with the latest edition or latest stories), `/news/archive` (last 7 days free, Pro gate after), `/news/archive/[date]` (one page per edition), `/news/[id]` (our summary, why it matters, tools in the story, link to the original, next story).
+7. `/pricing` (readers & builders / AI companies tabs, monthly–annual toggle, Get Pro → founding-member waitlist form, Expense it GST form, Free vs Pro table, founder's note, FAQ placeholders; founding counter hidden) and `/get-listed` (tool submission form, Talk to us form, `?topic=agency` preselects Agency). Both forms validate in the browser and in `/api/submit` with the same rules (`lib/validateSubmission.ts`); the API stores only the known, cleaned fields.
 
 ## Real-database checks (Taranga runs these on the Vercel preview at the end)
 
@@ -13,10 +14,22 @@ These write rows, so they are never run during the build.
 
 - [ ] Report a mistake (tool page) → one `submissions` row, `type = report_mistake`, payload has `tool_slug`.
 - [ ] The Signal with a real edition: once some `news` rows have `edition_date` and `edition_rank`, check `/news` (tabs, "3 of 7 read" after opening stories, "You're caught up"), an article's "Next story", and `/news/archive/<date>`. The live database has no editions yet, so only the "not out yet" state was checked against it; the edition logic was tested with mocked rows.
+- [ ] Pro waitlist (`/pricing` → Get Pro, annual) → one `submissions` row, `type = pro_waitlist`, `email` set, payload has `plan = annual` and `market`; add a GSTIN to check it's stored in capitals. Then once with monthly.
+- [ ] Expense it (`/pricing` → Add GST details) → one row, `type = invoice_request`, `email` = "Send invoices to", payload has `company_name`, `billing_address`, `state`, `plan`, and `finance_email` if filled.
+- [ ] Submit your tool (`/get-listed`) → one row, `type = tool_submission`, payload has the tool fields, `markets` as market ids (`in`, `id`…), `speaks_for_company = true`; the page switches to "Got it. Your tool is in the queue."
+- [ ] Talk to us (`/get-listed#talk`, topic "Featured placement") → one row, `type = contact`, payload has `name`, `topic`, `message`.
+- [ ] Talk to Bohemo Agency (footer link → `/get-listed?topic=agency`) → Agency is preselected, and sending gives one row with `type = agency`.
+- [ ] Honeypot: none of the checks above should create a second row, and a real browser's autofill must not fill the hidden `fax_only` field (submissions with it filled are silently dropped).
 
 ## Pre-launch fixes
 
 - [ ] Missing tool pages (`/tools/<unknown-slug>`) must return a real 404 status. Today they render the not-found page with `noindex` but status 200, because the `/tools` loading boundary starts streaming before `notFound()` runs. Same check for `/news/<unknown-id>`.
+- [ ] Switch edition numbers from calculated to stored (comes with Task 11's stored edition number and date).
+- [ ] Pricing placeholders to fill before launch: FAQ answers, [FEATURED PRICE]/[PERIOD], [VERIFIED PRICE], [MARKETS / CATEGORIES], [SLOTS PER PAGE], [+ SEA METHODS IF SUPPORTED], and [REPLY TIME] on Talk to us.
+
+## Upcoming tasks (not built yet)
+
+- Task 11: news import pipeline: RSS → Haiku scoring → fill `tools_mentioned` with slugs → `/admin/news` approval queue → publish an edition with a stored edition number and date.
 
 ## Data notes
 

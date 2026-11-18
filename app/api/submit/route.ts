@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import { validateSubmission } from '@/lib/validateSubmission'
 import { SUBMISSION_TYPES, type SubmissionType } from '@/types'
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const MAX_PAYLOAD_BYTES = 16 * 1024
 
 interface SubmitBody {
@@ -31,15 +31,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'invalid_type' }, { status: 400 })
   }
 
-  const rawEmail = typeof body.email === 'string' ? body.email.trim() : ''
-  if (rawEmail && !EMAIL_REGEX.test(rawEmail)) {
-    return NextResponse.json({ error: 'invalid_email' }, { status: 400 })
-  }
-
-  const payload = body.payload && typeof body.payload === 'object' ? body.payload : {}
-  const payloadSize = new TextEncoder().encode(JSON.stringify(payload)).length
+  const rawPayload =
+    body.payload && typeof body.payload === 'object' && !Array.isArray(body.payload)
+      ? (body.payload as Record<string, unknown>)
+      : {}
+  const payloadSize = new TextEncoder().encode(JSON.stringify(rawPayload)).length
   if (payloadSize > MAX_PAYLOAD_BYTES) {
     return NextResponse.json({ error: 'payload_too_large' }, { status: 413 })
+  }
+
+  // Same rules the forms run in the browser (lib/validateSubmission.ts).
+  const { errors, email, payload } = validateSubmission({
+    type: type as SubmissionType,
+    email: body.email,
+    payload: rawPayload,
+  })
+  const invalidFields = Object.keys(errors)
+  if (invalidFields.length > 0) {
+    return NextResponse.json({ error: 'invalid_fields', fields: invalidFields }, { status: 400 })
   }
 
   if (!supabase) {
@@ -49,7 +58,7 @@ export async function POST(request: Request) {
   // anon has INSERT only on submissions (no SELECT) — never chain .select() here.
   const { error } = await supabase.from('submissions').insert({
     type,
-    email: rawEmail || null,
+    email: email || null,
     payload,
   })
 
