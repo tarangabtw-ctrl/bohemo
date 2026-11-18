@@ -159,7 +159,7 @@ Copy voice: founder-led, raw, honest, specific, short sentences. Bohemo says "we
 ## Git rules
 
 - All work on named branches. Never push to `main`; Taranga merges manually after review.
-- Commit after each task, each commit builds. Descriptive messages: `feat: tools directory grid`
+- Commit after each task and push the branch (never `main`). Each commit builds. Descriptive messages: `feat: tools directory grid`
 - Don't squash unrelated changes into one commit.
 - Don't modify `.gitignore`, `.env*`, or `next.config.js` unless the spec requires it.
 
@@ -179,6 +179,8 @@ Copy voice: founder-led, raw, honest, specific, short sentences. Bohemo says "we
 10. Never reintroduce v1 brand tokens or design from `redesign/` prototypes.
 11. Never write the name as `bohemo.` or `bohemo` in anything users see. It is `Bohemo`.
 12. Never hand-type colours, font sizes or spacing; use the design tokens.
+13. Never insert, update or delete rows in the Supabase database to test things. That includes sending valid data to `/api/submit` or `/api/subscribe`, because both write rows. Verify with `npm run build` and mocked data only. If a check truly needs the real database, stop and ask Taranga first.
+14. Never run the dev server or any long-running watch command. `npm run start` is allowed only for a short smoke test; stop it as soon as the check is done.
 
 ---
 
@@ -188,6 +190,7 @@ Copy voice: founder-led, raw, honest, specific, short sentences. Bohemo says "we
 2. Supabase returns nothing → render a clean empty state, never crash.
 3. Unsure → do less, not more.
 4. Task too big for one commit → split it; every commit builds.
+5. The same error comes back 3 times → stop and report it. Don't keep trying.
 
 ---
 
