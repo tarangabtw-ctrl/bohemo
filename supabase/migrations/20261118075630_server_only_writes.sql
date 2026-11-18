@@ -1,7 +1,7 @@
 -- Bohemo: writes go through the server only.
 -- /api/submit and /api/subscribe now use the service role key (server-only),
 -- which bypasses RLS, so the public (anon) key no longer needs to insert.
--- Do not run until Taranga approves.
+-- Applied 18 Nov 2026 (remote version 20261118075630), after the service role key was added in Vercel.
 
 BEGIN;
 

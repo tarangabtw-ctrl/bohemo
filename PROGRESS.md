@@ -32,8 +32,10 @@ These write rows, so they are never run during the build.
 ## Security: server-only writes (18 Nov 2026)
 
 - `/api/submit` and `/api/subscribe` write with `lib/supabaseAdmin.ts` (service role key, `server-only`, never `NEXT_PUBLIC_`, never logged). Checked after build: the key appears in no file under `.next/`. Reads stay on the public key.
-- [ ] Add `SUPABASE_SERVICE_ROLE_KEY` in Vercel (Preview, and Production once v2 is merged). Without it, forms on the preview return "That broke" and the newsletter skips our Supabase copy.
-- [ ] Apply `supabase/migrations/20261118120000_server_only_writes.sql` **after** the key is in Vercel: drops the `submissions_insert` policy and revokes EXECUTE on `rls_auto_enable()` from PUBLIC, anon and authenticated. Written, not applied.
+- [x] Add `SUPABASE_SERVICE_ROLE_KEY` in Vercel (Preview done 18 Nov 2026; Production once v2 is merged). Without it, forms on the preview return "That broke" and the newsletter skips our Supabase copy.
+- [x] Applied 18 Nov 2026: `supabase/migrations/20261118075630_server_only_writes.sql` dropped `submissions_insert` and revoked EXECUTE on `rls_auto_enable()` from PUBLIC, anon and authenticated. Checked after: `submissions` has no policies (the advisor's "RLS enabled, no policy" note is intended), the function is executable only by postgres and service_role, and the `ensure_rls` trigger is still enabled.
+- [ ] On the preview: send one Report a mistake and one Pro waitlist form, and check each lands as one `submissions` row (proves the service role write works now that the public key can't insert).
+- [ ] Optional: the advisor still lists all four tables in the public GraphQL schema. That comes from the table-level SELECT grant, not from policies (RLS still returns no rows). To hide `submissions` and `subscribers`: `REVOKE SELECT ON public.submissions, public.subscribers FROM anon, authenticated;`
 - [ ] **When redesign/v2 is merged into main:** drop `subscribers_insert` too (`DROP POLICY IF EXISTS "subscribers_insert" ON public.subscribers;`). It stays until then because main's coming-soon page posts to main's own `/api/subscribe`, which inserts with the public key.
 
 ## Pre-launch fixes
