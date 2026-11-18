@@ -11,3 +11,6 @@ export const FOUNDING_PLACES = 500
 
 /** Bohemo Verified review time (SPEC.md: replaces every [REVIEW TIME]). */
 export const REVIEW_TIME = '10 working days'
+
+/** Every "Get Pro" button links here. Pricing opens the founding-member waitlist form on load. */
+export const GET_PRO_HREF = '/pricing?waitlist=1'

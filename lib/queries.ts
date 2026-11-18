@@ -263,3 +263,25 @@ export async function getEditionIndex(): Promise<EditionIndexStory[]> {
     return []
   }
 }
+
+/** A story as the command search needs it. */
+export type SearchStory = Pick<NewsArticle, 'id' | 'title' | 'excerpt' | 'why_it_matters' | 'source' | 'published_at'>
+
+export interface SearchIndex {
+  tools: Tool[]
+  stories: SearchStory[]
+}
+
+/** Everything the command search (⌘K) looks through: every tool, and the latest stories. */
+export async function getSearchIndex(storyLimit = 60): Promise<SearchIndex> {
+  const [tools, news] = await Promise.all([getTools(), getNews()])
+  const stories = news.slice(0, storyLimit).map(({ id, title, excerpt, why_it_matters, source, published_at }) => ({
+    id,
+    title,
+    excerpt,
+    why_it_matters,
+    source,
+    published_at,
+  }))
+  return { tools, stories }
+}

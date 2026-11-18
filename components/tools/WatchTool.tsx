@@ -3,6 +3,7 @@
 import { useId, useState } from 'react'
 import { Button } from '../Button'
 import { Icon } from '../Icon'
+import { GET_PRO_HREF } from '@/lib/pricing'
 
 /** "Watch this tool" is a Pro feature. Until Pro opens, the button explains that and points to Pricing. */
 export function WatchTool() {
@@ -25,7 +26,7 @@ export function WatchTool() {
         {open ? (
           <div className="grid justify-items-start gap-2.5">
             <p className="text-body-sm text-text-body">Watching is part of Pro. We tell you when the price or features change.</p>
-            <Button href="/pricing">Get Pro</Button>
+            <Button href={GET_PRO_HREF}>Get Pro</Button>
           </div>
         ) : (
           <p className="text-body-sm text-text-muted">Get an alert when the price or features change.</p>

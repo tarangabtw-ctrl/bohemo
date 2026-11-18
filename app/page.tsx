@@ -2,12 +2,14 @@ import Link from 'next/link'
 import { getTools, getTrendingTools, getLatestEditionDate, getEditionStories, getLatestNews } from '@/lib/queries'
 import { buildMetadata } from '@/lib/seo'
 import { SITE_URL } from '@/lib/site'
+import { GET_PRO_HREF } from '@/lib/pricing'
 import { NewsletterForm } from '@/components/NewsletterForm'
 import { ToolCard } from '@/components/ToolCard'
 import { NewsCard } from '@/components/NewsCard'
 import { EmptyState } from '@/components/EmptyState'
 import { Pulse } from '@/components/home/Pulse'
 import { HeroSearch } from '@/components/home/HeroSearch'
+import { Onboarding } from '@/components/home/Onboarding'
 
 // Tools, news and the daily edition change at runtime — without this, Next
 // statically prerenders Home at build time and never picks up new rows.
@@ -41,6 +43,7 @@ export default async function HomePage() {
 
       <Pulse items={pulseItems} />
       <HeroSearch tools={tools} />
+      <Onboarding />
 
       {/* Today's edition */}
       <section className="border-t-heavy border-border-ink py-8 md:py-11">
@@ -143,7 +146,7 @@ export default async function HomePage() {
               </p>
             </div>
             <Link
-              href="/pricing"
+              href={GET_PRO_HREF}
               className="inline-flex min-h-hit-min shrink-0 items-center rounded-pill bg-cream-200 px-7 font-body text-[15px] font-semibold text-ink-900 no-underline transition-colors duration-fast hover:bg-paper-0"
             >
               Get Pro

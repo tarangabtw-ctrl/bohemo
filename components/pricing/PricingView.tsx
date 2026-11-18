@@ -81,6 +81,12 @@ function Plans({ billing, market }: { billing: BillingPlan; market: { id: string
     track('waitlist_click', { source: 'pricing', plan: billing })
   }
 
+  // Every "Get Pro" button on the site links to /pricing?waitlist=1: open the form straight away.
+  // The form moves focus to its email field, which scrolls it into view.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('waitlist') === '1') setJoining(true)
+  }, [])
+
   function closeWaitlist() {
     setJoining(false)
     requestAnimationFrame(() => getProRef.current?.focus())
@@ -281,7 +287,9 @@ export function PricingView() {
 
   // ?for=companies opens the companies side (linked from elsewhere on the site).
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).get('for') === 'companies') setAudience('companies')
+    const params = new URLSearchParams(window.location.search)
+    // ?waitlist=1 needs the readers side, where the Pro card is.
+    if (params.get('for') === 'companies' && params.get('waitlist') !== '1') setAudience('companies')
   }, [])
 
   function choose(next: Audience) {

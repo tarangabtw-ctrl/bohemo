@@ -12,6 +12,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/news/archive`, lastModified: new Date() },
     { url: `${SITE_URL}/pricing`, lastModified: new Date() },
     { url: `${SITE_URL}/get-listed`, lastModified: new Date() },
+    { url: `${SITE_URL}/how-we-rate`, lastModified: new Date() },
+    { url: `${SITE_URL}/about`, lastModified: new Date() },
   ]
 
   let tools: { slug: string; created_at: string | null }[] = SEED_TOOLS.map((t) => ({

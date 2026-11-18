@@ -1,5 +1,6 @@
 import { Button } from '../Button'
 import { FREE_ARCHIVE_DAYS } from '@/lib/edition'
+import { GET_PRO_HREF } from '@/lib/pricing'
 
 /** Where the free archive ends. Older editions are part of Pro. */
 export function ProGate({ olderCount }: { olderCount?: number }) {
@@ -13,7 +14,7 @@ export function ProGate({ olderCount }: { olderCount?: number }) {
         Free readers get the last {FREE_ARCHIVE_DAYS} days of The Signal. Pro opens every edition.
       </p>
       <div className="flex flex-wrap items-center gap-4">
-        <Button href="/pricing">Get Pro</Button>
+        <Button href={GET_PRO_HREF}>Get Pro</Button>
         <span className="text-body-sm text-text-muted">₹499/mo or ₹4,990/yr</span>
       </div>
     </section>

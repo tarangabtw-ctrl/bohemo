@@ -1,6 +1,6 @@
 'use client'
 
-import { useId, useMemo, useState } from 'react'
+import { useEffect, useId, useMemo, useState } from 'react'
 import Link from 'next/link'
 import type { Tool } from '@/types'
 import { TOOL_CATEGORIES, PRICE_TYPES } from '@/types'
@@ -42,6 +42,15 @@ export function ToolsDirectory({ tools }: ToolsDirectoryProps) {
   const [sortOpen, setSortOpen] = useState(false)
   const [filterSheetOpen, setFilterSheetOpen] = useState(false)
   const searchId = useId()
+
+  // Search links here with ?q= (free text) or ?task= (a category). Apply them once on load.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const q = params.get('q')?.trim()
+    const task = params.get('task')
+    if (q) setQuery(q)
+    if (task && (TOOL_CATEGORIES as string[]).includes(task)) setCategories([task])
+  }, [])
 
   const anyVerified = tools.some((t) => t.verified_at)
 

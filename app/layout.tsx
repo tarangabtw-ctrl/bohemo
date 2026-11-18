@@ -5,6 +5,8 @@ import { Nav } from '@/components/Nav'
 import { BottomTabBar } from '@/components/BottomTabBar'
 import { Footer } from '@/components/Footer'
 import { MarketProvider } from '@/components/MarketProvider'
+import { CommandSearch } from '@/components/CommandSearch'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { SITE_URL } from '@/lib/site'
 import { poppins, notoSans, ibmPlexMono } from '@/lib/fonts'
 
@@ -29,9 +31,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <PostHogScript />
         <MarketProvider>
           <Nav />
+          <OfflineBanner />
           <main className="pb-[calc(theme(spacing.tabbar-h)+env(safe-area-inset-bottom))] md:pb-0">{children}</main>
           <Footer />
           <BottomTabBar />
+          <CommandSearch />
         </MarketProvider>
       </body>
     </html>

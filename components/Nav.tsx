@@ -8,6 +8,8 @@ import { Icon } from './Icon'
 import { Button } from './Button'
 import { MarketPicker } from './MarketPicker'
 import { useMarket } from './MarketProvider'
+import { GET_PRO_HREF } from '@/lib/pricing'
+import { openSearch } from '@/lib/search'
 
 const LINKS = [
   { id: 'tools', label: 'Tools', href: '/tools' },
@@ -80,23 +82,25 @@ export function Nav() {
           ))}
         </nav>
 
-        {/* Decorative search field — opens command search in a later task */}
+        {/* Opens the command search (components/CommandSearch.tsx). */}
         <div className="ml-auto hidden max-w-[300px] flex-1 md:flex">
-          <label className="flex h-11 w-full min-w-0 items-center gap-2.5 rounded-pill border-thin border-border-strong bg-surface-raised px-3.5 text-text-muted">
+          <button
+            type="button"
+            onClick={() => openSearch()}
+            aria-keyshortcuts="Meta+K /"
+            className="flex h-11 w-full min-w-0 items-center gap-2.5 rounded-pill border-thin border-border-strong bg-surface-raised px-3.5 text-left text-ink-600 outline-none hover:border-ink-900 focus-visible:outline focus-visible:outline-thick focus-visible:outline-focus-ring focus-visible:outline-offset-2"
+          >
             <Icon name="search" size={17} />
-            <span className="sr-only">Search tasks, tools and stories</span>
-            <input
-              className="h-full min-w-0 flex-1 bg-transparent font-body text-sm text-text-strong outline-none placeholder:text-ink-600"
-              placeholder="Search tasks, tools and stories"
-              readOnly
-            />
-            <span className="rounded-xs bg-cream-300 px-2 font-mono text-xs text-ink-700">⌘K</span>
-          </label>
+            <span className="min-w-0 flex-1 truncate font-body text-sm">Search tasks, tools and stories</span>
+            <span className="rounded-xs bg-cream-300 px-2 font-mono text-xs text-ink-700" aria-hidden="true">
+              ⌘K
+            </span>
+          </button>
         </div>
 
         <div className="ml-auto flex items-center gap-1.5 md:ml-0 md:gap-2">
           <div className="md:hidden">
-            <Button variant="ghost" icon="search" label="Search" />
+            <Button variant="ghost" icon="search" label="Search" onClick={() => openSearch()} />
           </div>
           <MarketPicker value={market} onChange={setMarket} align="end" />
           <span className="hidden md:block">
@@ -115,7 +119,7 @@ export function Nav() {
             </Link>
           </span>
           <div className="hidden md:block">
-            <Button href="/pricing">Get Pro</Button>
+            <Button href={GET_PRO_HREF}>Get Pro</Button>
           </div>
           <div className="md:hidden">
             <Button
@@ -141,7 +145,7 @@ export function Nav() {
             Sign in
           </Link>
           <div className="pt-1">
-            <Button href="/pricing" block onClick={() => setMenuOpen(false)}>
+            <Button href={GET_PRO_HREF} block onClick={() => setMenuOpen(false)}>
               Get Pro
             </Button>
           </div>
