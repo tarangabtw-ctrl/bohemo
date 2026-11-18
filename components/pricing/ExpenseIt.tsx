@@ -79,13 +79,13 @@ export function ExpenseIt({ plan, market }: ExpenseItProps) {
       <div>
         <p className="font-mono text-label font-medium uppercase text-text-muted">Expense it</p>
         <h2 id="expense-heading" className="mt-1.5 font-display text-title-2 font-bold text-text-strong">
-          A GST invoice your finance team will accept.
+          Paying through your company? Add its details once.
         </h2>
         <p className="mt-2 text-pretty text-[15px] leading-normal text-ink-700">
-          Add your company name and GSTIN once. Every payment comes with an invoice, by email and in your account.
+          Add your company name, address and GSTIN. We save them for your invoice, so you don’t type them again when you pay.
         </p>
       </div>
-      <dl aria-label="What the invoice shows" className="m-0 grid grid-cols-[auto_minmax(0,1fr)] border-t-hairline border-border-strong text-[13.5px]">
+      <dl aria-label="What we save" className="m-0 grid grid-cols-[auto_minmax(0,1fr)] border-t-hairline border-border-strong text-[13.5px]">
         {[
           ['Billed to', 'Your company name'],
           ['GSTIN', 'Your GSTIN'],
@@ -103,7 +103,7 @@ export function ExpenseIt({ plan, market }: ExpenseItProps) {
         <div ref={sentRef} tabIndex={-1} role="status" className="grid gap-1 border-t-hairline border-border-strong pt-4 outline-none md:col-span-2">
           <p className="flex items-start gap-2 font-semibold text-positive">
             <Icon name="circle-check" size={20} className="mt-0.5 shrink-0" />
-            Saved. Your GST details will be on every invoice.
+            Saved. Your details are on file for your invoice.
           </p>
           <p className="text-body-sm text-ink-700">
             Pro isn&apos;t open for payment yet. When it opens, we&apos;ll email {sentTo.email}
@@ -126,7 +126,7 @@ export function ExpenseIt({ plan, market }: ExpenseItProps) {
           ref={formRef}
           onSubmit={handleSubmit}
           noValidate
-          aria-label="GST invoice details"
+          aria-label="Company details for your invoice"
           className="relative grid gap-x-5 gap-y-4 border-t-hairline border-border-strong pt-4 md:col-span-2 md:grid-cols-2"
         >
           <TextField
@@ -140,7 +140,7 @@ export function ExpenseIt({ plan, market }: ExpenseItProps) {
           <TextField
             name="gstin"
             label="GSTIN (optional)"
-            hint="Leave blank if you’re not GST-registered."
+            hint="Saved for your invoice. Leave blank if you’re not GST-registered."
             maxLength={20}
             error={errors.gstin}
           />
@@ -157,7 +157,7 @@ export function ExpenseIt({ plan, market }: ExpenseItProps) {
             name="state"
             label="State"
             placeholder="Choose your state"
-            hint="Place of supply, shown on the invoice."
+            hint="Saved for your invoice."
             groups={STATE_GROUPS}
             required
             error={errors.state}
@@ -184,7 +184,7 @@ export function ExpenseIt({ plan, market }: ExpenseItProps) {
           <Honeypot />
           <FormAlert status={status} hasFieldErrors={Object.keys(errors).length > 0} className="md:col-span-2" />
           <p className="text-body-sm text-text-muted md:col-span-2">
-            Pro isn&apos;t open for payment yet. We keep these details for your first invoice, and nothing is charged now.
+            Pro isn&apos;t open for payment yet. We save these details for your invoice, and nothing is charged now.
           </p>
           <div className="grid items-center gap-x-4 gap-y-1 md:col-span-2 md:flex md:flex-wrap">
             <Button type="submit" disabled={status === 'sending'}>

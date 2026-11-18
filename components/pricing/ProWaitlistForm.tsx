@@ -90,7 +90,7 @@ export function ProWaitlistForm({ plan, market, onCancel }: ProWaitlistFormProps
       <TextField
         name="gstin"
         label="GSTIN (optional)"
-        hint="For a GST invoice when you pay."
+        hint="Saved for your invoice."
         maxLength={20}
         error={errors.gstin}
       />
