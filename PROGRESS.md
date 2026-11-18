@@ -12,6 +12,8 @@
 
 9. PostHog: v1 event names unchanged; the 15 v2 events added and documented in `lib/analytics.ts` (who sends each, with which properties). `stack_cloned` is reserved: stacks can't be cloned yet, so nothing sends it. `checkout_started` fires when the Pro waitlist opens, until payments go live. Saves fire only when saving, and `edition_completed` once per edition per device.
 
+10. Newsletter: `/api/subscribe` now checks the Kit config first (key set, form ID numeric) and adds to Kit before writing to Supabase. If Kit fails, nothing is written, so a retry isn't wrongly told "already subscribed". A Supabase failure after Kit succeeds still counts as subscribed. Config problems show in the Vercel function logs (values never logged). Form copy is in Bohemo's voice. **Not yet working end to end: the env values are wrong** (see "Newsletter: fix before testing" below).
+
 ## Real-database checks (Taranga runs these on the Vercel preview at the end)
 
 These write rows, so they are never run during the build.
@@ -24,6 +26,8 @@ These write rows, so they are never run during the build.
 - [ ] Talk to us (`/get-listed#talk`, topic "Featured placement") → one row, `type = contact`, payload has `name`, `topic`, `message`.
 - [ ] Talk to Bohemo Agency (footer link → `/get-listed?topic=agency`) → Agency is preselected, and sending gives one row with `type = agency`.
 - [ ] Honeypot: none of the checks above should create a second row, and a real browser's autofill must not fill the hidden `fax_only` field (submissions with it filled are silently dropped).
+
+- [ ] **Newsletter: fix the Kit env vars first, then test.** Checked 18 Nov 2026 with read-only Kit calls: `CONVERTKIT_FORM_ID` holds the Kit **API secret** (it authenticates as one), not the form's number, and `CONVERTKIT_API_KEY` is rejected by Kit (401). Set `CONVERTKIT_API_KEY` to the v3 API key (Kit → Settings → Developer) and `CONVERTKIT_FORM_ID` to the form's number (from its URL in Kit), in `.env.local` and in Vercel for Preview and Production. Consider regenerating the API secret, since it has been sent in the subscribe URL path to Kit. Then on the preview: subscribe with a real address → it appears in Kit under that form, one `subscribers` row, the form says "You're in…"; the same address again → "You're already on the list…".
 
 ## Pre-launch fixes
 

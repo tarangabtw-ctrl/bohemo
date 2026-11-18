@@ -6,10 +6,10 @@ import { Icon } from './Icon'
 import { Button } from './Button'
 
 const MESSAGES: Record<SubscribeStatus, string> = {
-  success: "You're in. Watch your inbox for the next issue.",
-  duplicate: "You're already subscribed.",
-  error: 'Something went wrong. Try again.',
-  invalid: 'Please enter a valid email.',
+  success: "You're in. The next edition of The Signal lands at 8:00 IST.",
+  duplicate: "You're already on the list. The next edition lands at 8:00 IST.",
+  error: "That broke. Our fault, not yours. Try again.",
+  invalid: 'Check the email address. It should look like name@company.com.',
 }
 
 export function NewsletterForm({ source }: { source: NewsletterSource }) {
