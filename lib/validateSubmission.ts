@@ -47,7 +47,8 @@ const asText = (v: unknown) => (typeof v === 'string' ? v.trim() : '')
 function isHttpUrl(s: string): boolean {
   try {
     const u = new URL(s)
-    return (u.protocol === 'https:' || u.protocol === 'http:') && u.hostname.includes('.')
+    // No "user:pass@" part: real pages don't need it, and it's how "mailto:x@y.com" sneaks through once https:// is added.
+    return (u.protocol === 'https:' || u.protocol === 'http:') && u.hostname.includes('.') && !u.username && !u.password
   } catch {
     return false
   }
@@ -63,11 +64,20 @@ function text(opts: { required?: string; max?: number } = {}): Rule {
   }
 }
 
-function link(opts: { required?: string } = {}): Rule {
+/** "example.com/page" → "https://example.com/page". Links that already name a scheme are left alone. */
+export function withHttps(s: string): string {
+  return /^[a-z][a-z0-9+.-]*:\/\//i.test(s) ? s : `https://${s.replace(/^\/+/, '')}`
+}
+
+function link(opts: { required?: string; addHttps?: boolean } = {}): Rule {
   return (v) => {
-    const s = asText(v)
-    if (!s) return opts.required ? { error: opts.required } : {}
-    if (s.length > 500 || !isHttpUrl(s)) return { error: 'Enter the full link, starting with https://' }
+    const typed = asText(v)
+    if (!typed) return opts.required ? { error: opts.required } : {}
+    // Add https:// first, then run the same strict check as every other link.
+    const s = opts.addHttps ? withHttps(typed) : typed
+    if (s.length > 500 || !isHttpUrl(s)) {
+      return { error: opts.addHttps ? 'Check the link. It should look like example.com/pricing.' : 'Enter the full link, starting with https://' }
+    }
     return { value: s }
   }
 }
@@ -179,6 +189,15 @@ const RULES: Partial<Record<SubmissionType, TypeRules>> = {
       wants_verified: flag(),
     },
   },
+  report_mistake: {
+    email: email(),
+    payload: {
+      tool_slug: text({ required: 'Missing tool. Reload the page and try again.', max: 120 }),
+      whats_wrong: text({ required: 'Tell us what’s wrong.', max: 2000 }),
+      correct_information: text({ max: 2000 }),
+      source_url: link({ addHttps: true }),
+    },
+  },
   contact: CONTACT_RULES,
   agency: {
     ...CONTACT_RULES,
@@ -195,8 +214,7 @@ export function validateSubmission({ type, email: rawEmail, payload }: Submissio
   const errors: FieldErrors = {}
 
   if (!rules) {
-    // No field rules for this type yet (report_mistake): keep the old behaviour,
-    // where only the email format is checked and the payload is stored as sent.
+    // Every type has rules today; this only guards a type added without any.
     const result = email()(rawEmail)
     if (result.error) errors.email = result.error
     return { errors, email: typeof result.value === 'string' ? result.value : '', payload }

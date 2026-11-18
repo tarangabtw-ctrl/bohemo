@@ -1,17 +1,16 @@
 'use client'
 
 import { useId, useState } from 'react'
-import { submitForm } from '@/lib/submit'
+import { readText, useSubmission } from '@/lib/useSubmission'
 import { Button } from '../Button'
 import { Icon } from '../Icon'
+import { Honeypot } from '../forms/Fields'
 
 interface ReportMistakeFormProps {
   toolSlug: string
   toolName: string
   lastChecked: string | null
 }
-
-type Status = 'idle' | 'sending' | 'sent' | 'error' | 'invalid'
 
 const FIELD =
   'w-full rounded-md border-thin border-border-strong bg-surface-overlay px-4 font-body text-[15.5px] text-text-strong outline-none placeholder:text-ink-600 focus-visible:outline focus-visible:outline-thick focus-visible:outline-focus-ring focus-visible:outline-offset-2'
@@ -20,30 +19,23 @@ const LINK_BTN =
 
 export function ReportMistakeForm({ toolSlug, toolName, lastChecked }: ReportMistakeFormProps) {
   const [open, setOpen] = useState(false)
-  const [status, setStatus] = useState<Status>('idle')
+  const { status, errors, send } = useSubmission()
   const id = useId()
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    const form = new FormData(e.currentTarget)
-    const value = (key: string) => String(form.get(key) ?? '').trim()
-    if (!value('wrong')) {
-      setStatus('invalid')
-      return
-    }
-    setStatus('sending')
-    const result = await submitForm({
+    const data = new FormData(e.currentTarget)
+    // Same rules as /api/submit: a link typed without https:// gets it added, then the strict check runs.
+    await send(e.currentTarget, {
       type: 'report_mistake',
-      email: value('email') || undefined,
-      honeypot: value('company'),
+      email: readText(data, 'email'),
       payload: {
         tool_slug: toolSlug,
-        whats_wrong: value('wrong'),
-        correct_information: value('correct'),
-        source_url: value('source'),
+        whats_wrong: readText(data, 'wrong'),
+        correct_information: readText(data, 'correct'),
+        source_url: readText(data, 'source'),
       },
     })
-    setStatus(result === 'success' ? 'sent' : result)
   }
 
   return (
@@ -75,37 +67,62 @@ export function ReportMistakeForm({ toolSlug, toolName, lastChecked }: ReportMis
           >
             <label className="grid gap-1.5">
               <span className="text-sm font-semibold">What&apos;s wrong?</span>
-              <textarea name="wrong" required aria-describedby={`${id}-wrong`} className={`${FIELD} min-h-24 resize-y py-3 leading-normal`} />
-              <small id={`${id}-wrong`} className="text-[13px] leading-snug text-text-muted">
-                Say which point or price it is.
+              <textarea
+                name="wrong"
+                data-field="whats_wrong"
+                required
+                aria-invalid={errors.whats_wrong ? true : undefined}
+                aria-describedby={`${id}-wrong`}
+                className={`${FIELD} min-h-24 resize-y py-3 leading-normal`}
+              />
+              <small id={`${id}-wrong`} className={`text-[13px] leading-snug ${errors.whats_wrong ? 'font-medium text-negative' : 'text-text-muted'}`}>
+                {errors.whats_wrong ?? 'Say which point or price it is.'}
               </small>
             </label>
             <label className="grid content-start gap-1.5">
               <span className="text-sm font-semibold">What is the correct information?</span>
-              <textarea name="correct" className={`${FIELD} min-h-24 resize-y py-3 leading-normal`} />
+              <textarea name="correct" data-field="correct_information" className={`${FIELD} min-h-24 resize-y py-3 leading-normal`} />
             </label>
             <label className="grid content-start gap-1.5">
               <span className="text-sm font-semibold">Source link</span>
-              <input name="source" type="url" placeholder="https://" aria-describedby={`${id}-source`} className={`${FIELD} min-h-hit-min`} />
-              <small id={`${id}-source`} className="text-[13px] leading-snug text-text-muted">
-                A page where we can confirm it.
+              <input
+                name="source"
+                data-field="source_url"
+                type="text"
+                inputMode="url"
+                autoCapitalize="off"
+                spellCheck={false}
+                placeholder="example.com/pricing"
+                aria-invalid={errors.source_url ? true : undefined}
+                aria-describedby={`${id}-source`}
+                className={`${FIELD} min-h-hit-min`}
+              />
+              <small id={`${id}-source`} className={`text-[13px] leading-snug ${errors.source_url ? 'font-medium text-negative' : 'text-text-muted'}`}>
+                {errors.source_url ?? 'A page where we can confirm it.'}
               </small>
             </label>
             <label className="grid content-start gap-1.5">
               <span className="text-sm font-semibold">Your email (optional)</span>
-              <input name="email" type="email" autoComplete="email" aria-describedby={`${id}-email`} className={`${FIELD} min-h-hit-min`} />
-              <small id={`${id}-email`} className="text-[13px] leading-snug text-text-muted">
-                Only if you want to hear back when we fix it.
+              <input
+                name="email"
+                data-field="email"
+                type="email"
+                autoComplete="email"
+                aria-invalid={errors.email ? true : undefined}
+                aria-describedby={`${id}-email`}
+                className={`${FIELD} min-h-hit-min`}
+              />
+              <small id={`${id}-email`} className={`text-[13px] leading-snug ${errors.email ? 'font-medium text-negative' : 'text-text-muted'}`}>
+                {errors.email ?? 'Only if you want to hear back when we fix it.'}
               </small>
             </label>
-            {/* Honeypot: hidden from people and screen readers; bots fill it in. */}
-            <input type="text" name="company" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
+            <Honeypot />
 
             {(status === 'error' || status === 'invalid') && (
               <p role="alert" className="flex items-start gap-2 text-sm font-medium text-negative md:col-span-2">
                 <Icon name="circle-alert" size={18} className="mt-0.5 shrink-0" />
                 {status === 'invalid'
-                  ? 'Tell us what’s wrong, and check the email address if you added one.'
+                  ? 'Check the fields marked above.'
                   : 'That didn’t send. Our fault, not yours. Try again.'}
               </p>
             )}
