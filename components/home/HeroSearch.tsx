@@ -5,6 +5,7 @@ import Link from 'next/link'
 import type { Tool } from '@/types'
 import { computeLocalFit } from '@/lib/localFit'
 import { MARKETS } from '@/lib/markets'
+import { track } from '@/lib/analytics'
 import { useMarket } from '../MarketProvider'
 import { Icon } from '../Icon'
 import { Button } from '../Button'
@@ -71,7 +72,10 @@ export function HeroSearch({ tools }: HeroSearchProps) {
 
         <form
           className="mt-8 max-w-[920px] md:mt-9"
-          onSubmit={(e) => e.preventDefault()}
+          onSubmit={(e) => {
+            e.preventDefault()
+            if (query.trim()) track('task_search', { query: query.trim(), source: 'home', results: results.length })
+          }}
         >
           <label htmlFor={inputId} className="mb-3 block font-display text-lg font-bold tracking-title text-text-strong md:text-xl">
             What do you need AI to do?
@@ -96,7 +100,14 @@ export function HeroSearch({ tools }: HeroSearchProps) {
         {chips.length > 0 && (
           <div className="mt-5 flex flex-wrap gap-2">
             {chips.map((c) => (
-              <FilterChip key={c} selected={query.toLowerCase() === c.toLowerCase()} onClick={() => setQuery(c)}>
+              <FilterChip
+                key={c}
+                selected={query.toLowerCase() === c.toLowerCase()}
+                onClick={() => {
+                  setQuery(c)
+                  track('task_search', { query: c, source: 'home', results: searchTools(tools, c, current.id, current.name).length })
+                }}
+              >
                 {c}
               </FilterChip>
             ))}
@@ -117,6 +128,7 @@ export function HeroSearch({ tools }: HeroSearchProps) {
                     </span>
                     <Link
                       href={`/tools/${tool.slug}`}
+                      onClick={() => track('task_result_click', { kind: 'tool', target: tool.slug, position: i + 1, query: query.trim(), source: 'home' })}
                       className="flex min-h-[76px] flex-1 items-center gap-4 rounded-pill border-hairline border-border-hairline bg-surface-raised px-4 py-3 text-inherit no-underline transition-colors duration-fast hover:border-ink-900"
                     >
                       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-surface-inset font-display font-bold text-ink-700">

@@ -128,7 +128,7 @@ export default async function HomePage() {
             <p className="mt-3 text-[15px] text-ink-700">AI news for India and Southeast Asia, in your inbox before your first meeting.</p>
           </div>
           <div className="flex flex-col justify-center gap-3">
-            <NewsletterForm />
+            <NewsletterForm source="home" />
             <p className="text-[13px] text-text-muted">No spam. Unsubscribe any time.</p>
           </div>
         </div>

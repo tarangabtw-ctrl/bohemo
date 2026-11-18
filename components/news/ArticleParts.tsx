@@ -7,17 +7,57 @@ import { computeLocalFit } from '@/lib/localFit'
 import { MARKETS } from '@/lib/markets'
 import { priceLabel } from '@/lib/utils'
 import { pad2 } from '@/lib/edition'
+import { track } from '@/lib/analytics'
 import { useReadStories, useSavedStories } from '@/lib/savedAndCompare'
 import { useMarket } from '../MarketProvider'
 import { LocalFitMeter } from '../LocalFitMeter'
 import { Icon } from '../Icon'
 
-/** Marks the story as read when the article opens, for The Signal's "3 of 7 read". */
-export function MarkRead({ id }: { id: string }) {
-  const { markRead } = useReadStories()
+interface MarkReadProps {
+  id: string
+  /** Set when the story is part of an edition of The Signal. */
+  editionDate?: string | null
+  rank?: number | null
+  /** Every story id in that edition, to know when the reader has finished it. */
+  editionStoryIds?: string[]
+}
+
+const COMPLETED_KEY = 'bohemo:editions-completed'
+
+function readCompleted(): string[] {
+  try {
+    const parsed: unknown = JSON.parse(window.localStorage.getItem(COMPLETED_KEY) ?? '[]')
+    return Array.isArray(parsed) ? parsed.filter((x): x is string => typeof x === 'string') : []
+  } catch {
+    return []
+  }
+}
+
+/**
+ * Marks the story as read when the article opens, for The Signal's "3 of 7 read".
+ * For edition stories it also sends edition_story_read, and edition_completed
+ * the first time every story in that edition has been read on this device.
+ */
+export function MarkRead({ id, editionDate, rank, editionStoryIds }: MarkReadProps) {
+  const { read, markRead } = useReadStories()
   useEffect(() => {
     markRead(id)
-  }, [id, markRead])
+    if (editionDate) track('edition_story_read', { id, edition_date: editionDate, rank })
+  }, [id, markRead, editionDate, rank])
+
+  // `read` updates after markRead writes, so this sees the story just opened.
+  useEffect(() => {
+    if (!editionDate || !editionStoryIds || editionStoryIds.length === 0) return
+    if (!editionStoryIds.every((sid) => read.includes(sid))) return
+    const done = readCompleted()
+    if (done.includes(editionDate)) return
+    track('edition_completed', { edition_date: editionDate, stories: editionStoryIds.length })
+    try {
+      window.localStorage.setItem(COMPLETED_KEY, JSON.stringify([...done, editionDate].slice(-60)))
+    } catch {
+      // can't remember it: it may be sent again on a later visit
+    }
+  }, [read, editionDate, editionStoryIds])
   return null
 }
 
@@ -43,7 +83,7 @@ export function WhyItMattersLabel({ region }: { region: string }) {
   return <>Why it matters{region === name ? ` for ${name}` : ''}</>
 }
 
-export function ArticleToolCards({ tools }: { tools: Tool[] }) {
+export function ArticleToolCards({ tools, storyId }: { tools: Tool[]; storyId: string }) {
   const { market } = useMarket()
   const current = MARKETS.find((m) => m.id === market) ?? MARKETS[0]
   return (
@@ -52,6 +92,7 @@ export function ArticleToolCards({ tools }: { tools: Tool[] }) {
         <Link
           key={t.slug}
           href={`/tools/${t.slug}`}
+          onClick={() => track('news_to_tool_click', { slug: t.slug, story_id: storyId, source: 'article' })}
           className="group grid grid-cols-[48px_minmax(0,1fr)] items-center gap-4 rounded-lg border-hairline border-border-hairline bg-surface-raised p-5 text-inherit no-underline hover:border-ink-900 md:grid-cols-[56px_minmax(0,1fr)_auto] md:gap-5 md:px-6"
         >
           <span

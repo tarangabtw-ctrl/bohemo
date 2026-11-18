@@ -5,7 +5,10 @@ export type SubscribeStatus = 'success' | 'duplicate' | 'error' | 'invalid'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-export async function subscribe(email: string): Promise<SubscribeStatus> {
+/** Where the form sits, for analytics. */
+export type NewsletterSource = 'home' | 'article' | 'edition'
+
+export async function subscribe(email: string, source: NewsletterSource): Promise<SubscribeStatus> {
   if (!EMAIL_REGEX.test(email)) return 'invalid'
   try {
     const res = await fetch('/api/subscribe', {
@@ -17,6 +20,7 @@ export async function subscribe(email: string): Promise<SubscribeStatus> {
     const status: SubscribeStatus =
       res.ok && data.status === 'duplicate' ? 'duplicate' : res.ok && data.status === 'success' ? 'success' : 'error'
     track('newsletter_signup', { status })
+    if (status === 'success') track('newsletter_subscribed', { source })
     return status
   } catch {
     track('newsletter_signup', { status: 'error' })

@@ -158,7 +158,7 @@ export function EditionReader({ stories, tools, nextDate, previous, live }: Edit
             <h3 className="font-display text-title-2 font-bold text-text-strong">
               Get The Signal in your inbox at <EditionTime />
             </h3>
-            <NewsletterForm />
+            <NewsletterForm source="edition" />
           </div>
           <Link
             href={previous ? `/news/archive/${previous.date}` : '/news/archive'}

@@ -79,12 +79,16 @@ function Plans({ billing, market }: { billing: BillingPlan; market: { id: string
   function openWaitlist() {
     setJoining(true)
     track('waitlist_click', { source: 'pricing', plan: billing })
+    track('checkout_started', { source: 'pricing', plan: billing })
   }
 
   // Every "Get Pro" button on the site links to /pricing?waitlist=1: open the form straight away.
   // The form moves focus to its email field, which scrolls it into view.
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).get('waitlist') === '1') setJoining(true)
+    if (new URLSearchParams(window.location.search).get('waitlist') === '1') {
+      setJoining(true)
+      track('checkout_started', { source: 'get_pro_link', plan: billing })
+    }
   }, [])
 
   function closeWaitlist() {

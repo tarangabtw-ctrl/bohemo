@@ -81,7 +81,7 @@ export function Onboarding() {
   function done() {
     write(DONE_KEY, '1')
     if (role) write(ROLE_KEY, role)
-    setMarket(picked)
+    setMarket(picked, 'onboarding')
     setOpen(false)
     const name = MARKETS.find((m) => m.id === picked)?.name ?? 'India'
     setToast(`Showing tools and prices for ${name}.`)

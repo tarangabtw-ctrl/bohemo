@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { MARKETS } from '@/lib/markets'
+import { track } from '@/lib/analytics'
 
 const STORAGE_KEY = 'bohemo:market'
 
@@ -36,7 +37,8 @@ interface MarketContextValue {
   market: string
   /** True once the real market (localStorage or timezone) has loaded on the client. */
   resolved: boolean
-  setMarket: (id: string) => void
+  /** `source` is for analytics: where the reader picked it. */
+  setMarket: (id: string, source?: 'picker' | 'onboarding') => void
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null)
@@ -55,7 +57,8 @@ export function MarketProvider({ children }: { children: React.ReactNode }) {
     setResolved(true)
   }, [])
 
-  function setMarket(id: string) {
+  function setMarket(id: string, source: 'picker' | 'onboarding' = 'picker') {
+    track('market_selected', { market: id, previous: market, source })
     setMarketState(id)
     setResolved(true)
     try {

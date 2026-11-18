@@ -1,7 +1,7 @@
 'use client'
 
 import { useId, useState } from 'react'
-import { subscribe, type SubscribeStatus } from '@/lib/subscribe'
+import { subscribe, type NewsletterSource, type SubscribeStatus } from '@/lib/subscribe'
 import { Icon } from './Icon'
 import { Button } from './Button'
 
@@ -12,7 +12,7 @@ const MESSAGES: Record<SubscribeStatus, string> = {
   invalid: 'Please enter a valid email.',
 }
 
-export function NewsletterForm() {
+export function NewsletterForm({ source }: { source: NewsletterSource }) {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<SubscribeStatus | null>(null)
   const [loading, setLoading] = useState(false)
@@ -21,7 +21,7 @@ export function NewsletterForm() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setLoading(true)
-    setStatus(await subscribe(email))
+    setStatus(await subscribe(email, source))
     setLoading(false)
   }
 

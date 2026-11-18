@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import type { NewsArticle, Tool } from '@/types'
 import { MARKETS } from '@/lib/markets'
+import { track } from '@/lib/analytics'
 import { GET_PRO_HREF, PRO_PRICE } from '@/lib/pricing'
 import { formatDate } from '@/lib/utils'
 import { useCompareTray, useSavedStories, useSavedTools } from '@/lib/savedAndCompare'
@@ -182,8 +183,14 @@ export function SavedView({ tools, stories }: SavedViewProps) {
               </p>
             </div>
             <div className="grid gap-2 md:flex md:items-center md:gap-3">
-              <Button href="/sign-in?from=saves">Continue with email</Button>
-              <Button variant="secondary" href="/sign-in?from=saves&with=google">
+              <Button href="/sign-in?from=saves" onClick={() => track('signup_from_saves', { method: 'email', saves: n })}>
+                Continue with email
+              </Button>
+              <Button
+                variant="secondary"
+                href="/sign-in?from=saves&with=google"
+                onClick={() => track('signup_from_saves', { method: 'google', saves: n })}
+              >
                 Continue with Google
               </Button>
               <button

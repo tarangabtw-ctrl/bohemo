@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { track } from '@/lib/analytics'
 
 const SAVED_KEY = 'bohemo:saved-tools'
 const COMPARE_KEY = 'bohemo:compare-tools'
@@ -63,7 +64,11 @@ export function useSavedTools() {
   const [saved, write] = useStoredList(SAVED_KEY)
 
   const toggle = useCallback(
-    (slug: string) => write(saved.includes(slug) ? saved.filter((s) => s !== slug) : [...saved, slug]),
+    (slug: string) => {
+      if (saved.includes(slug)) return write(saved.filter((s) => s !== slug))
+      track('tool_saved', { slug, saves: saved.length + 1 })
+      write([...saved, slug])
+    },
     [saved, write],
   )
 
@@ -98,7 +103,11 @@ export function useSavedStories() {
   const [saved, write] = useStoredList(SAVED_STORIES_KEY)
 
   const toggle = useCallback(
-    (id: string) => write(saved.includes(id) ? saved.filter((s) => s !== id) : [...saved, id]),
+    (id: string) => {
+      if (saved.includes(id)) return write(saved.filter((s) => s !== id))
+      track('story_saved', { id, saves: saved.length + 1 })
+      write([...saved, id])
+    },
     [saved, write],
   )
 

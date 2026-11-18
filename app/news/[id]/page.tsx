@@ -76,7 +76,12 @@ export default async function NewsArticlePage({ params }: Props) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      <MarkRead id={article.id} />
+      <MarkRead
+        id={article.id}
+        editionDate={article.edition_date}
+        rank={article.edition_rank}
+        editionStoryIds={edition?.stories.map((s) => s.id)}
+      />
 
       {inEdition && (
         <div className="sticky top-[60px] z-10 border-b-hairline border-ink-900 bg-surface-page">
@@ -174,7 +179,7 @@ export default async function NewsArticlePage({ params }: Props) {
               <h2 className="font-mono text-label font-medium uppercase text-text-muted">
                 {tools.length > 1 ? 'Tools in this story' : 'Tool in this story'}
               </h2>
-              <ArticleToolCards tools={tools} />
+              <ArticleToolCards tools={tools} storyId={article.id} />
             </section>
           )}
 
@@ -274,7 +279,7 @@ export default async function NewsArticlePage({ params }: Props) {
             <h2 className="font-display text-title-2 font-bold text-text-strong">
               Get The Signal in your inbox at <EditionTime />
             </h2>
-            <NewsletterForm />
+            <NewsletterForm source="article" />
           </section>
         </article>
 

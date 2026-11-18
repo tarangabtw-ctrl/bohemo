@@ -10,6 +10,8 @@
 
 8. `/how-we-rate`, `/about` (story example from the latest real story), `/saved` (tools and stories tabs, 20-save meter, sign-in nudge after 3 saves, full state with Get Pro), `/sign-in` (UI only: says plainly that sign-in isn't on yet; no email is sent), onboarding on first Home visit (mobile sheet with focus trap, desktop card, toast), command search (⌘K, "/", nav bar, mobile icon; data from read-only `/api/search`; arrow keys, Enter, Escape, recent searches on this device), 404, error, offline banner, `/tools` loading. Every Get Pro links to `/pricing?waitlist=1`, which opens the waitlist form. `/tools` applies `?q=` and `?task=`. Report a mistake now uses the shared rules: a link typed without https:// gets it added, then the strict check (links with `user:pass@` are refused).
 
+9. PostHog: v1 event names unchanged; the 15 v2 events added and documented in `lib/analytics.ts` (who sends each, with which properties). `stack_cloned` is reserved: stacks can't be cloned yet, so nothing sends it. `checkout_started` fires when the Pro waitlist opens, until payments go live. Saves fire only when saving, and `edition_completed` once per edition per device.
+
 ## Real-database checks (Taranga runs these on the Vercel preview at the end)
 
 These write rows, so they are never run during the build.

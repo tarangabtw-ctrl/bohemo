@@ -7,6 +7,7 @@ import type { Tool } from '@/types'
 import { PRICE_TYPES } from '@/types'
 import { computeLocalFit, localFitNotes, FIT_STATUS_LABEL, type FitStatus } from '@/lib/localFit'
 import { MARKETS } from '@/lib/markets'
+import { track } from '@/lib/analytics'
 import { formatDate, priceLabel } from '@/lib/utils'
 import { useCompareTray } from '@/lib/savedAndCompare'
 import { useMarket } from '../MarketProvider'
@@ -144,7 +145,14 @@ function ToolHead({ tool, fitTool, onRemove }: { tool: Tool; fitTool: ReturnType
       </div>
       <LocalFitMeter fit={fitTool} showLabel={false} />
       <p className="whitespace-nowrap font-mono text-data font-medium text-text-strong">{priceLabel(tool)}</p>
-      <Button block variant="secondary" href={tool.url} external iconRight="arrow-up-right">
+      <Button
+        block
+        variant="secondary"
+        href={tool.url}
+        external
+        iconRight="arrow-up-right"
+        onClick={() => track('outbound_tool_click', { slug: tool.slug, source: 'compare' })}
+      >
         Try {tool.name}
       </Button>
     </>
@@ -175,6 +183,12 @@ export function CompareView({ tools }: CompareViewProps) {
   useEffect(() => {
     if (active > tools.length - 1) setActive(Math.max(0, tools.length - 1))
   }, [active, tools.length])
+
+  // Once per set of tools: removing one from the comparison counts as a new comparison.
+  const toolKey = tools.map((t) => t.slug).join(',')
+  useEffect(() => {
+    if (toolKey) track('compare_opened', { tools: toolKey.split(','), count: toolKey.split(',').length })
+  }, [toolKey])
 
   if (tools.length === 0) {
     return (

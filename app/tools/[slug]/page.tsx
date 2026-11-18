@@ -10,6 +10,7 @@ import { Tag } from '@/components/Tag'
 import { Icon } from '@/components/Icon'
 import { VerifiedBadge } from '@/components/VerifiedBadge'
 import { ToolActions } from '@/components/tools/ToolActions'
+import { TrackedLink } from '@/components/TrackedLink'
 import { LocalFitBreakdown } from '@/components/tools/LocalFitBreakdown'
 import { ToolAlternatives } from '@/components/tools/ToolAlternatives'
 import { WatchTool } from '@/components/tools/WatchTool'
@@ -194,9 +195,14 @@ export default async function ToolPage({ params }: Props) {
                       </span>
                     </div>
                     <h3 className="font-display text-title-1 font-bold text-text-strong">
-                      <Link href={`/news/${story.id}`} className="text-inherit no-underline hover:underline">
+                      <TrackedLink
+                        href={`/news/${story.id}`}
+                        event="tool_to_news_click"
+                        props={{ slug: tool.slug, story_id: story.id }}
+                        className="text-inherit no-underline hover:underline"
+                      >
                         {story.title}
-                      </Link>
+                      </TrackedLink>
                     </h3>
                     {story.why_it_matters && (
                       <p className="text-body-sm text-text-body">
@@ -204,9 +210,9 @@ export default async function ToolPage({ params }: Props) {
                         {story.why_it_matters}
                       </p>
                     )}
-                    <Link href={`/news/${story.id}`} className={MORE}>
+                    <TrackedLink href={`/news/${story.id}`} event="tool_to_news_click" props={{ slug: tool.slug, story_id: story.id }} className={MORE}>
                       Read the story →
-                    </Link>
+                    </TrackedLink>
                   </article>
                 ))}
               </div>

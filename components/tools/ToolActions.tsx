@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type { Tool } from '@/types'
 import { computeLocalFit } from '@/lib/localFit'
 import { MARKETS } from '@/lib/markets'
+import { track } from '@/lib/analytics'
 import { useSavedTools, useCompareTray } from '@/lib/savedAndCompare'
 import { useMarket } from '../MarketProvider'
 import { LocalFitMeter } from '../LocalFitMeter'
@@ -46,7 +47,7 @@ export function ToolActions({ tool }: ToolActionsProps) {
   }
 
   const tryButton = (
-    <Button block href={tool.url} external iconRight="arrow-up-right">
+    <Button block href={tool.url} external iconRight="arrow-up-right" onClick={() => track('outbound_tool_click', { slug: tool.slug, source: 'tool_page' })}>
       Try {tool.name}
     </Button>
   )

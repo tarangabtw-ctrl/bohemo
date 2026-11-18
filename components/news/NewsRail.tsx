@@ -6,6 +6,7 @@ import { computeLocalFit } from '@/lib/localFit'
 import { MARKETS } from '@/lib/markets'
 import { priceLabel } from '@/lib/utils'
 import { formatEditionDate } from '@/lib/edition'
+import { track } from '@/lib/analytics'
 import { useMarket } from '../MarketProvider'
 import { LocalFitMeter } from '../LocalFitMeter'
 
@@ -37,6 +38,7 @@ export function NewsRail({ tools, toolsTitle, past }: NewsRailProps) {
             <Link
               key={t.slug}
               href={`/tools/${t.slug}`}
+              onClick={() => track('news_to_tool_click', { slug: t.slug, source: 'edition_rail' })}
               className="group grid grid-cols-[40px_minmax(0,1fr)] items-center gap-x-3 gap-y-1 border-b-hairline border-border-hairline py-3.5 text-inherit no-underline"
             >
               <span

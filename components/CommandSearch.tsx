@@ -9,6 +9,7 @@ import { computeLocalFit } from '@/lib/localFit'
 import { MARKETS } from '@/lib/markets'
 import { formatDate, priceLabel } from '@/lib/utils'
 import { useFocusTrap } from '@/lib/useFocusTrap'
+import { track } from '@/lib/analytics'
 import { OPEN_SEARCH_EVENT, addRecentSearch, readRecentSearches, writeRecentSearches } from '@/lib/search'
 import { useMarket } from './MarketProvider'
 import { Icon } from './Icon'
@@ -20,6 +21,9 @@ type IndexState = { status: 'idle' | 'loading' | 'error' } | { status: 'ready'; 
 
 interface Option {
   key: string
+  kind?: 'task' | 'tool' | 'story'
+  /** Category, tool slug or story id. */
+  target?: string
   href?: string
   /** For recent searches: put this text back in the box instead of navigating. */
   fill?: string
@@ -172,9 +176,14 @@ export function CommandSearch() {
     if (!q) return recent.map((r) => ({ key: `recent-${r}`, fill: r }))
     if (!results) return []
     return [
-      ...results.tasks.map((t) => ({ key: `task-${t.category}`, href: `/tools?task=${encodeURIComponent(t.category)}` })),
-      ...results.tools.slice(0, 4).map(({ tool }) => ({ key: `tool-${tool.slug}`, href: `/tools/${tool.slug}` })),
-      ...results.stories.slice(0, 3).map((s) => ({ key: `story-${s.id}`, href: `/news/${s.id}` })),
+      ...results.tasks.map((t) => ({
+        key: `task-${t.category}`,
+        kind: 'task' as const,
+        target: t.category,
+        href: `/tools?task=${encodeURIComponent(t.category)}`,
+      })),
+      ...results.tools.slice(0, 4).map(({ tool }) => ({ key: `tool-${tool.slug}`, kind: 'tool' as const, target: tool.slug, href: `/tools/${tool.slug}` })),
+      ...results.stories.slice(0, 3).map((s) => ({ key: `story-${s.id}`, kind: 'story' as const, target: s.id, href: `/news/${s.id}` })),
     ]
   }, [q, recent, results])
 
@@ -183,8 +192,12 @@ export function CommandSearch() {
   const optionId = (i: number) => `${listId}-opt-${i}`
   const activeIndex = Math.min(active, Math.max(options.length - 1, 0))
 
+  const total = results ? results.tasks.length + results.tools.length + results.stories.length : 0
+
+  /** Runs when a search is acted on (a result opened, Enter, or "All tools"), not on every keystroke. */
   function remember() {
     if (!q) return
+    track('task_search', { query: query.trim(), source: 'command', results: total })
     const next = addRecentSearch(recent, query)
     setRecent(next)
     writeRecentSearches(next)
@@ -198,6 +211,13 @@ export function CommandSearch() {
     }
     if (option.href) {
       remember()
+      track('task_result_click', {
+        kind: option.kind,
+        target: option.target,
+        position: options.indexOf(option) + 1,
+        query: query.trim(),
+        source: 'command',
+      })
       setOpen(false)
       router.push(option.href)
     }
@@ -254,8 +274,6 @@ export function CommandSearch() {
       },
     }
   }
-
-  const total = results ? results.tasks.length + results.tools.length + results.stories.length : 0
 
   return (
     <div className="fixed inset-0 z-50">
